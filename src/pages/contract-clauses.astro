@@ -1,0 +1,290 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>合同修改常用表述｜YU之宝库</title>
+
+    <style>
+      :global(*) {
+        box-sizing: border-box;
+      }
+
+      :global(html) {
+        background: #09070d;
+      }
+
+      :global(body) {
+        margin: 0;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(86, 55, 118, 0.12), transparent 35%),
+          #09070d;
+        color: #eeeaf3;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+          sans-serif;
+      }
+
+      .page {
+        min-height: 100vh;
+      }
+
+      .topbar {
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 48px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+
+      .logo {
+        color: #eee8f5;
+        text-decoration: none;
+        font-size: 16px;
+        letter-spacing: 0.12em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 28px;
+      }
+
+      .nav a {
+        color: #aaa2b5;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .nav a:hover {
+        color: #eee8f5;
+      }
+
+      .main {
+        width: min(900px, calc(100% - 48px));
+        margin: 0 auto;
+        padding: 70px 0 100px;
+      }
+
+      .page-label {
+        margin-bottom: 16px;
+        color: #a48ab9;
+        font-size: 13px;
+        letter-spacing: 0.14em;
+      }
+
+      h1 {
+        margin: 0 0 50px;
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .category-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 88px;
+        padding: 22px 24px;
+        border: 1px solid rgba(180, 150, 205, 0.16);
+        background: rgba(255, 255, 255, 0.018);
+        color: #ddd7e4;
+        text-decoration: none;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .category-card:hover {
+        border-color: rgba(180, 150, 205, 0.38);
+        background: rgba(180, 150, 205, 0.045);
+        transform: translateY(-2px);
+      }
+
+      .category-name {
+        font-size: 15px;
+        color: #ddd7e4;
+      }
+
+      .category-number {
+        color: #77717f;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+      }
+
+      .loading,
+      .error {
+        padding: 30px;
+        border: 1px solid rgba(180, 150, 205, 0.16);
+        color: #aaa2b5;
+        font-size: 14px;
+      }
+
+      .error {
+        color: #b99acb;
+      }
+
+      @media (max-width: 700px) {
+        .topbar {
+          padding: 0 22px;
+        }
+
+        .main {
+          width: min(100% - 32px, 900px);
+          padding-top: 48px;
+        }
+
+        h1 {
+          font-size: 25px;
+          margin-bottom: 36px;
+        }
+
+        .categories {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <a href="/" class="logo">YU之宝库</a>
+
+        <nav class="nav">
+          <a href="/archive">案例库</a>
+          <a href="/">首页</a>
+        </nav>
+      </header>
+
+      <main class="main">
+        <div id="loading" class="loading">
+          正在验证访问权限……
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+          无权访问。
+        </div>
+
+        <div id="content" style="display: none;">
+          <div class="page-label">
+            PRIVATE · CONTRACT CLAUSES
+          </div>
+
+          <h1>合同修改常用表述</h1>
+
+          <div class="categories">
+            <a href="/contract-clause-detail?id=1" class="category-card">
+              <span class="category-name">付款条款</span>
+              <span class="category-number">01</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=2" class="category-card">
+              <span class="category-name">交付/履行</span>
+              <span class="category-number">02</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=3" class="category-card">
+              <span class="category-name">验收</span>
+              <span class="category-number">03</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=4" class="category-card">
+              <span class="category-name">违约责任</span>
+              <span class="category-number">04</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=5" class="category-card">
+              <span class="category-name">合同解除</span>
+              <span class="category-number">05</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=6" class="category-card">
+              <span class="category-name">赔偿责任</span>
+              <span class="category-number">06</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=7" class="category-card">
+              <span class="category-name">责任限制</span>
+              <span class="category-number">07</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=8" class="category-card">
+              <span class="category-name">知识产权</span>
+              <span class="category-number">08</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=9" class="category-card">
+              <span class="category-name">保密</span>
+              <span class="category-number">09</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=10" class="category-card">
+              <span class="category-name">争议解决</span>
+              <span class="category-number">10</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=11" class="category-card">
+              <span class="category-name">通知与送达</span>
+              <span class="category-number">11</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=12" class="category-card">
+              <span class="category-name">不可抗力</span>
+              <span class="category-number">12</span>
+            </a>
+
+            <a href="/contract-clause-detail?id=13" class="category-card">
+              <span class="category-name">其他</span>
+              <span class="category-number">13</span>
+            </a>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const loading =
+        document.querySelector("#loading") as HTMLElement | null;
+
+      const errorBox =
+        document.querySelector("#error") as HTMLElement | null;
+
+      const content =
+        document.querySelector("#content") as HTMLElement | null;
+
+      if (!loading || !errorBox || !content) {
+        throw new Error("页面元素加载失败");
+      }
+
+      const checkLogin = async () => {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          window.location.href = "/login";
+          return;
+        }
+
+        loading.style.display = "none";
+        content.style.display = "block";
+      };
+
+      checkLogin();
+    </script>
+  </body>
+</html>

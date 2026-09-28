@@ -1,0 +1,401 @@
+---
+import { supabase } from "../lib/supabase";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>案例详情｜YU之宝库</title>
+
+    <style>
+      :global(*) {
+        box-sizing: border-box;
+      }
+
+      :global(body) {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(130, 80, 180, 0.12), transparent 35%),
+          linear-gradient(180deg, #100d19 0%, #09070e 100%);
+        color: #eeeaf5;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+          sans-serif;
+      }
+
+      .topbar {
+        height: 72px;
+        border-bottom: 1px solid rgba(190, 160, 220, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 42px;
+      }
+
+      .logo {
+        color: #f2edf8;
+        text-decoration: none;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 24px;
+      }
+
+      .nav a {
+        color: #aaa2b8;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .nav a:hover {
+        color: #e5d8f4;
+      }
+
+      main {
+        width: min(900px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 60px 0 100px;
+      }
+
+      .back {
+        display: inline-block;
+        margin-bottom: 42px;
+        color: #aaa2b8;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .back:hover {
+        color: #e5d8f4;
+      }
+
+      .type {
+        display: inline-block;
+        margin-bottom: 14px;
+        color: #9276ad;
+        font-size: 11px;
+        letter-spacing: 0.16em;
+      }
+
+      h1 {
+        margin: 0 0 22px;
+        font-size: 30px;
+        font-weight: 500;
+        line-height: 1.4;
+        letter-spacing: 0.03em;
+      }
+
+      .actions {
+        display: none;
+        gap: 10px;
+        margin-bottom: 48px;
+      }
+
+      .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(190, 160, 220, 0.25);
+        background: rgba(140, 100, 180, 0.08);
+        color: #dcd3e6;
+        text-decoration: none;
+        padding: 9px 18px;
+        border-radius: 2px;
+        font-size: 12px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+
+      .action-button:hover {
+        background: rgba(140, 100, 180, 0.16);
+        border-color: rgba(190, 160, 220, 0.45);
+      }
+
+      .delete-button {
+        border-color: rgba(180, 100, 120, 0.2);
+        background: rgba(180, 80, 100, 0.05);
+        color: #bda6b0;
+      }
+
+      .delete-button:hover {
+        border-color: rgba(210, 110, 135, 0.4);
+        background: rgba(180, 80, 100, 0.1);
+      }
+
+      .section {
+        border-top: 1px solid rgba(190, 160, 220, 0.13);
+        padding: 30px 0 34px;
+      }
+
+      .section-title {
+        margin-bottom: 16px;
+        color: #9f91ad;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+      }
+
+      .content {
+        color: #d5cedd;
+        font-size: 14px;
+        line-height: 1.9;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .keywords {
+        color: #bdaed0;
+      }
+
+      .private-section {
+        display: none;
+      }
+
+      .private-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .private {
+        color: #9276ad;
+        font-size: 9px;
+        letter-spacing: 0.14em;
+      }
+
+      .loading {
+        color: #aaa2b8;
+        font-size: 13px;
+        padding: 30px 0;
+      }
+
+      .error {
+        border: 1px solid rgba(220, 100, 120, 0.25);
+        background: rgba(220, 100, 120, 0.05);
+        color: #d9aab5;
+        padding: 16px;
+        font-size: 13px;
+      }
+
+      @media (max-width: 700px) {
+        .topbar {
+          padding: 0 20px;
+        }
+
+        .nav {
+          gap: 12px;
+        }
+
+        main {
+          width: min(100% - 28px, 900px);
+          padding-top: 45px;
+        }
+
+        h1 {
+          font-size: 25px;
+        }
+
+        .actions {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="logo" href="/">YU之宝库</a>
+
+      <nav class="nav">
+        <a href="/archive">案例库</a>
+        <a href="/">首页</a>
+      </nav>
+    </header>
+
+    <main>
+      <div id="loading" class="loading">
+        正在加载……
+      </div>
+
+      <div id="error" class="error" style="display: none;"></div>
+
+      <div id="case-content" style="display: none;">
+        <a class="back" href="/archive">← 返回案例库</a>
+
+        <div class="type" id="case-type"></div>
+
+        <h1 id="case-title"></h1>
+
+        <div class="actions" id="actions">
+          <a class="action-button" id="edit-button">
+            编辑
+          </a>
+
+          <button class="action-button delete-button" id="delete-button">
+            删除
+          </button>
+        </div>
+
+        <section class="section">
+          <div class="section-title">关键词</div>
+          <div class="content keywords" id="case-keywords"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">结果</div>
+          <div class="content" id="case-result"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">核心要点</div>
+          <div class="content" id="case-core-points"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">案情</div>
+          <div class="content" id="case-facts"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">争议焦点</div>
+          <div class="content" id="case-issues"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">法律依据</div>
+          <div class="content" id="case-legal-basis"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">关联案例</div>
+          <div class="content" id="case-related-cases"></div>
+        </section>
+
+        <section class="section private-section" id="private-section">
+          <div class="section-title private-title">
+            <span>我的解法</span>
+            <span class="private">PRIVATE</span>
+          </div>
+
+          <div class="content" id="case-my-solution"></div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const archiveId = new URLSearchParams(
+        window.location.search
+      ).get("id");
+
+      const loading = document.querySelector("#loading") as HTMLDivElement;
+      const errorBox = document.querySelector("#error") as HTMLDivElement;
+      const caseContent = document.querySelector("#case-content") as HTMLDivElement;
+
+      const actions = document.querySelector("#actions") as HTMLDivElement;
+      const privateSection = document.querySelector("#private-section") as HTMLElement;
+
+      const editButton = document.querySelector("#edit-button") as HTMLAnchorElement;
+      const deleteButton = document.querySelector("#delete-button") as HTMLButtonElement;
+
+      const setText = (id: string, value: unknown) => {
+        const element = document.querySelector(`#${id}`);
+
+        if (element) {
+          element.textContent =
+            value === null || value === undefined || value === ""
+              ? "暂无"
+              : String(value);
+        }
+      };
+
+      const showError = (message: string) => {
+        loading.style.display = "none";
+        caseContent.style.display = "none";
+        errorBox.style.display = "block";
+        errorBox.textContent = message;
+      };
+
+      if (!archiveId) {
+        showError("没有找到案例编号。");
+      } else {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        let query = supabase
+          .from("archives")
+          .select("*")
+          .eq("id", archiveId);
+
+        if (user) {
+          query = query.eq("user_id", user.id);
+        }
+
+        const { data: archive, error } = await query.single();
+
+        if (error || !archive) {
+          showError(
+            user
+              ? "没有找到这个案例。"
+              : "这个案例目前需要登录后才能查看。"
+          );
+        } else {
+          loading.style.display = "none";
+          caseContent.style.display = "block";
+
+          setText("case-type", archive.type);
+          setText("case-title", archive.title);
+          setText("case-keywords", archive.keywords);
+          setText("case-result", archive.result);
+          setText("case-core-points", archive.core_points);
+          setText("case-facts", archive.facts);
+          setText("case-issues", archive.issues);
+          setText("case-legal-basis", archive.legal_basis);
+          setText("case-related-cases", archive.related_cases);
+
+          if (user) {
+            actions.style.display = "flex";
+            privateSection.style.display = "block";
+
+            setText("case-my-solution", archive.my_solution);
+
+            editButton.href =
+              `/archive-edit?id=${encodeURIComponent(archive.id)}`;
+
+            deleteButton.addEventListener("click", async () => {
+              const confirmed = window.confirm(
+                "确定要删除这个案例吗？\n\n删除后无法恢复。"
+              );
+
+              if (!confirmed) {
+                return;
+              }
+
+              const { error: deleteError } = await supabase
+                .from("archives")
+                .delete()
+                .eq("id", archive.id)
+                .eq("user_id", user.id);
+
+              if (deleteError) {
+                console.error(deleteError);
+                window.alert("删除失败，请稍后再试。");
+                return;
+              }
+
+              window.location.href = "/archive";
+            });
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

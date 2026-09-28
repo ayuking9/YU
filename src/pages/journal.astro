@@ -1,0 +1,168 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Journal — Y</title>
+  </head>
+
+  <body>
+    <main>
+      <header>
+        <a href="/">← 返回首页</a>
+
+        <p class="eyebrow">PERSONAL JOURNAL</p>
+
+        <h1>日志</h1>
+
+        <p class="intro">
+          想法、经历、日常，以及那些想留下来的文字。
+        </p>
+      </header>
+
+      <section class="entries">
+        <article>
+          <div class="date">2026.09.15</div>
+
+          <div>
+            <div class="tag">LIFE</div>
+            <h2>第一篇记录</h2>
+            <p>
+              这是我的个人数字档案馆的第一篇记录。
+              以后这里会真正连接到数据库。
+            </p>
+          </div>
+
+          <span class="arrow">↗</span>
+        </article>
+
+        <article>
+          <div class="date">COMING SOON</div>
+
+          <div>
+            <div class="tag">THOUGHTS</div>
+            <h2>更多记录</h2>
+            <p>
+              日记、随笔、旅行记录、人生阶段，
+              都可以慢慢保存到这里。
+            </p>
+          </div>
+
+          <span class="arrow">↗</span>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    background: #08090c;
+    color: #f3f3f0;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
+      sans-serif;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 30px 100px;
+  }
+
+  header {
+    padding: 40px 0 100px;
+  }
+
+  a {
+    color: #9b8cff;
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+  .eyebrow,
+  .tag {
+    color: #8e86b5;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .eyebrow {
+    margin-top: 70px;
+  }
+
+  h1 {
+    font-size: 80px;
+    letter-spacing: -4px;
+    margin: 25px 0 20px;
+  }
+
+  .intro {
+    color: #85868d;
+    line-height: 1.8;
+  }
+
+  .entries {
+    border-top: 1px solid #292a30;
+  }
+
+  article {
+    position: relative;
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 40px;
+    padding: 45px 20px;
+    border-bottom: 1px solid #292a30;
+    transition: background 0.3s ease;
+  }
+
+  article:hover {
+    background: rgba(255, 255, 255, 0.025);
+  }
+
+  .date {
+    color: #5f6068;
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  h2 {
+    margin: 12px 0;
+    font-size: 28px;
+  }
+
+  article p {
+    max-width: 600px;
+    color: #777880;
+    line-height: 1.8;
+    font-size: 14px;
+  }
+
+  .arrow {
+    position: absolute;
+    right: 20px;
+    top: 45px;
+    color: #66676e;
+    font-size: 20px;
+  }
+
+  @media (max-width: 700px) {
+    main {
+      padding: 40px 20px 80px;
+    }
+
+    h1 {
+      font-size: 60px;
+    }
+
+    article {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
+  }
+</style>

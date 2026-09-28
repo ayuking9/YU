@@ -1,0 +1,195 @@
+---
+import { supabase } from "../lib/supabase";
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Login — Y</title>
+  </head>
+
+  <body>
+    <main>
+      <a href="/">← 返回首页</a>
+
+      <section class="login-box">
+        <p class="eyebrow">PRIVATE ARCHIVE</p>
+
+        <h1>登录</h1>
+
+        <p class="intro">
+          登录后进入你的私人档案空间。
+        </p>
+
+        <form id="login-form">
+          <label>
+            邮箱
+            <input
+              id="email"
+              type="email"
+              placeholder="你的邮箱"
+              required
+            />
+          </label>
+
+          <label>
+            密码
+            <input
+              id="password"
+              type="password"
+              placeholder="你的密码"
+              required
+            />
+          </label>
+
+          <button type="submit">登录</button>
+
+          <p id="message"></p>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const form = document.querySelector("#login-form");
+      const message = document.querySelector("#message");
+
+      form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const email = document.querySelector("#email").value;
+        const password = document.querySelector("#password").value;
+
+        message.textContent = "登录中……";
+
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          message.textContent = "登录失败：" + error.message;
+          return;
+        }
+
+        message.textContent = "登录成功，正在进入……";
+
+        window.location.href = "/archive";
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    background: #08090c;
+    color: #f3f3f0;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
+      sans-serif;
+  }
+
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 30px 100px;
+  }
+
+  a {
+    color: #9b8cff;
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+  .login-box {
+    max-width: 480px;
+    margin: 120px auto 0;
+  }
+
+  .eyebrow {
+    color: #8e86b5;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    font-size: 64px;
+    letter-spacing: -4px;
+    margin: 25px 0 20px;
+  }
+
+  .intro {
+    color: #85868d;
+    margin-bottom: 50px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #9a9ba2;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  input {
+    padding: 16px;
+    border: 1px solid #292a30;
+    background: #111217;
+    color: #f3f3f0;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: #6d658f;
+  }
+
+  button {
+    margin-top: 10px;
+    padding: 17px 25px;
+    border: 0;
+    background: #9b8cff;
+    color: #08090c;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    opacity: 0.85;
+  }
+
+  #message {
+    min-height: 20px;
+    color: #85868d;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 700px) {
+    main {
+      padding: 40px 20px 80px;
+    }
+
+    h1 {
+      font-size: 55px;
+    }
+
+    .login-box {
+      margin-top: 80px;
+    }
+  }
+</style>

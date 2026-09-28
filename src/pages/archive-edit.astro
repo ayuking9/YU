@@ -1,0 +1,547 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>编辑案例｜YU之宝库</title>
+
+    <style>
+      :global(*) {
+        box-sizing: border-box;
+      }
+
+      :global(body) {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(130, 80, 180, 0.12), transparent 35%),
+          linear-gradient(180deg, #100d19 0%, #09070e 100%);
+        color: #eeeaf5;
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          "PingFang SC",
+          "Hiragino Sans GB",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+
+      .topbar {
+        height: 72px;
+        border-bottom: 1px solid rgba(190, 160, 220, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 42px;
+      }
+
+      .logo {
+        color: #f2edf8;
+        text-decoration: none;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 24px;
+      }
+
+      .nav a {
+        color: #aaa2b8;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .nav a:hover {
+        color: #e5d8f4;
+      }
+
+      main {
+        width: min(900px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 70px 0 100px;
+      }
+
+      .page-head {
+        margin-bottom: 46px;
+      }
+
+      .eyebrow {
+        color: #8f7aa8;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      .section {
+        border-top: 1px solid rgba(190, 160, 220, 0.14);
+        padding: 30px 0 42px;
+      }
+
+      .section-title {
+        margin-bottom: 24px;
+        color: #c8bdd5;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+      }
+
+      .field {
+        margin-bottom: 24px;
+      }
+
+      .field:last-child {
+        margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 9px;
+        color: #b7aec2;
+        font-size: 13px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        border: 1px solid rgba(190, 160, 220, 0.16);
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.025);
+        color: #eeeaf5;
+        padding: 13px 14px;
+        font: inherit;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: rgba(180, 140, 220, 0.5);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      textarea {
+        min-height: 150px;
+        resize: vertical;
+        line-height: 1.75;
+      }
+
+      .private {
+        color: #9276ad;
+        font-size: 10px;
+        letter-spacing: 0.14em;
+        margin-left: 8px;
+      }
+
+      .loading,
+      .error {
+        border: 1px solid rgba(190, 160, 220, 0.14);
+        padding: 18px;
+        color: #aaa2b8;
+        font-size: 13px;
+      }
+
+      .error {
+        border-color: rgba(220, 100, 120, 0.25);
+        background: rgba(220, 100, 120, 0.05);
+        color: #d9aab5;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding-top: 10px;
+      }
+
+      .back {
+        color: #aaa2b8;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .back:hover {
+        color: #e5d8f4;
+      }
+
+      button {
+        border: 1px solid rgba(190, 160, 220, 0.3);
+        background: rgba(140, 100, 180, 0.1);
+        color: #eeeaf5;
+        padding: 12px 26px;
+        border-radius: 2px;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+      }
+
+      button:hover {
+        background: rgba(140, 100, 180, 0.18);
+        border-color: rgba(190, 160, 220, 0.5);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: wait;
+      }
+
+      .message {
+        margin-top: 16px;
+        min-height: 20px;
+        font-size: 13px;
+        color: #b9a9c8;
+      }
+
+      @media (max-width: 700px) {
+        .topbar {
+          padding: 0 20px;
+        }
+
+        .nav {
+          gap: 12px;
+        }
+
+        main {
+          width: min(100% - 28px, 900px);
+          padding-top: 45px;
+        }
+
+        h1 {
+          font-size: 25px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="logo" href="/">YU之宝库</a>
+
+      <nav class="nav">
+        <a href="/archive">案例库</a>
+        <a href="/">首页</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="page-head">
+        <div class="eyebrow">CASE / EDIT</div>
+        <h1>编辑案例</h1>
+      </div>
+
+      <div id="loading" class="loading">
+        正在读取案例……
+      </div>
+
+      <div id="error" class="error" style="display: none;"></div>
+
+      <form id="edit-form" style="display: none;">
+        <section class="section">
+          <div class="section-title">01 / 基本信息</div>
+
+          <div class="field">
+            <label for="title">案例名称</label>
+            <input id="title" name="title" type="text" required />
+          </div>
+
+          <div class="field">
+            <label for="type">法律类型</label>
+            <select id="type" name="type" required>
+              <option value="民商事">民商事</option>
+              <option value="劳动">劳动</option>
+              <option value="知识产权">知识产权</option>
+              <option value="资本市场">资本市场</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="keywords">关键词</label>
+            <input id="keywords" name="keywords" type="text" />
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">02 / 案件内容</div>
+
+          <div class="field">
+            <label for="result">结果</label>
+            <textarea id="result" name="result"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="core_points">核心要点</label>
+            <textarea id="core_points" name="core_points"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="facts">案情</label>
+            <textarea id="facts" name="facts"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="issues">争议焦点</label>
+            <textarea id="issues" name="issues"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="legal_basis">法律依据</label>
+            <textarea id="legal_basis" name="legal_basis"></textarea>
+          </div>
+
+          <div class="field">
+            <label for="related_cases">关联案例</label>
+            <textarea id="related_cases" name="related_cases"></textarea>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">
+            03 / 我的解法
+            <span class="private">PRIVATE</span>
+          </div>
+
+          <div class="field">
+            <label for="my_solution">我的解法</label>
+            <textarea id="my_solution" name="my_solution"></textarea>
+          </div>
+        </section>
+
+        <div class="actions">
+          <a class="back" id="back-link" href="/archive">
+            ← 返回案例
+          </a>
+
+          <button id="save-button" type="submit">
+            保存修改
+          </button>
+        </div>
+
+        <div class="message" id="message"></div>
+      </form>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const loading =
+        document.querySelector("#loading") as HTMLElement | null;
+
+      const errorBox =
+        document.querySelector("#error") as HTMLElement | null;
+
+      const form =
+        document.querySelector("#edit-form") as HTMLFormElement | null;
+
+      const message =
+        document.querySelector("#message") as HTMLElement | null;
+
+      const saveButton =
+        document.querySelector("#save-button") as HTMLButtonElement | null;
+
+      const backLink =
+        document.querySelector("#back-link") as HTMLAnchorElement | null;
+
+      const archiveId = new URLSearchParams(
+        window.location.search
+      ).get("id");
+
+      function showError(text: string) {
+        if (loading) {
+          loading.style.display = "none";
+        }
+
+        if (form) {
+          form.style.display = "none";
+        }
+
+        if (errorBox) {
+          errorBox.textContent = text;
+          errorBox.style.display = "block";
+        }
+      }
+
+      function setValue(
+        id: string,
+        value: string | null | undefined
+      ) {
+        const element =
+          document.querySelector(`#${id}`) as
+            | HTMLInputElement
+            | HTMLSelectElement
+            | HTMLTextAreaElement
+            | null;
+
+        if (element) {
+          element.value = value ?? "";
+        }
+      }
+
+      async function loadArchive() {
+        if (!archiveId) {
+          showError("没有找到案例编号。");
+          return;
+        }
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          window.location.href = "/login";
+          return;
+        }
+
+        const { data: archive, error } = await supabase
+          .from("archives")
+          .select("*")
+          .eq("id", archiveId)
+          .eq("user_id", user.id)
+          .single();
+
+        if (error || !archive) {
+          console.error(error);
+          showError("没有找到这个案例，或者你没有访问权限。");
+          return;
+        }
+
+        setValue("title", archive.title);
+        setValue("type", archive.type);
+        setValue("keywords", archive.keywords);
+        setValue("result", archive.result);
+        setValue("core_points", archive.core_points);
+        setValue("facts", archive.facts);
+        setValue("issues", archive.issues);
+        setValue("legal_basis", archive.legal_basis);
+        setValue("related_cases", archive.related_cases);
+        setValue("my_solution", archive.my_solution);
+
+        if (backLink) {
+          backLink.href =
+            `/archive-detail?id=${encodeURIComponent(archive.id)}`;
+        }
+
+        if (loading) {
+          loading.style.display = "none";
+        }
+
+        if (form) {
+          form.style.display = "block";
+
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (saveButton) {
+              saveButton.disabled = true;
+              saveButton.textContent = "正在保存……";
+            }
+
+            if (message) {
+              message.textContent = "";
+            }
+
+            const formData = new FormData(form);
+
+            const title = String(
+              formData.get("title") ?? ""
+            ).trim();
+
+            const type = String(
+              formData.get("type") ?? ""
+            ).trim();
+
+            const keywords = String(
+              formData.get("keywords") ?? ""
+            ).trim();
+
+            const result = String(
+              formData.get("result") ?? ""
+            ).trim();
+
+            const core_points = String(
+              formData.get("core_points") ?? ""
+            ).trim();
+
+            const facts = String(
+              formData.get("facts") ?? ""
+            ).trim();
+
+            const issues = String(
+              formData.get("issues") ?? ""
+            ).trim();
+
+            const legal_basis = String(
+              formData.get("legal_basis") ?? ""
+            ).trim();
+
+            const related_cases = String(
+              formData.get("related_cases") ?? ""
+            ).trim();
+
+            const my_solution = String(
+              formData.get("my_solution") ?? ""
+            ).trim();
+
+            if (!user) {
+              window.location.href = "/login";
+              return;
+            }
+
+            const { error: updateError } = await supabase
+              .from("archives")
+              .update({
+                title,
+                type,
+                keywords,
+                result,
+                core_points,
+                facts,
+                issues,
+                legal_basis,
+                related_cases,
+                my_solution,
+              })
+              .eq("id", archiveId)
+              .eq("user_id", user.id);
+
+            if (updateError) {
+              console.error(updateError);
+
+              if (message) {
+                message.textContent =
+                  "保存失败，请稍后再试。";
+              }
+
+              if (saveButton) {
+                saveButton.disabled = false;
+                saveButton.textContent = "保存修改";
+              }
+
+              return;
+            }
+
+            window.location.href =
+              `/archive-detail?id=${encodeURIComponent(archiveId)}`;
+          });
+        }
+      }
+
+      loadArchive();
+    </script>
+  </body>
+</html>

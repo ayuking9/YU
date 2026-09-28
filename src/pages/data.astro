@@ -1,0 +1,194 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Data — Y</title>
+  </head>
+
+  <body>
+    <main>
+      <a href="/">← 返回首页</a>
+
+      <header>
+        <p class="eyebrow">PERSONAL DATA CENTER</p>
+        <h1>数据</h1>
+        <p class="intro">
+          属于我的个人数据、统计与长期记录。
+        </p>
+      </header>
+
+      <section class="stats">
+        <div class="stat">
+          <span>ARCHIVES</span>
+          <strong>000</strong>
+          <p>档案记录</p>
+        </div>
+
+        <div class="stat">
+          <span>JOURNALS</span>
+          <strong>001</strong>
+          <p>日志记录</p>
+        </div>
+
+        <div class="stat">
+          <span>YEARS</span>
+          <strong>001</strong>
+          <p>记录年份</p>
+        </div>
+      </section>
+
+      <section class="future">
+        <div class="future-title">FUTURE MODULES</div>
+
+        <div class="module">
+          <span>01</span>
+          <div>
+            <h2>Timeline</h2>
+            <p>人生时间线与重要事件。</p>
+          </div>
+        </div>
+
+        <div class="module">
+          <span>02</span>
+          <div>
+            <h2>Statistics</h2>
+            <p>个人数据统计与可视化。</p>
+          </div>
+        </div>
+
+        <div class="module">
+          <span>03</span>
+          <div>
+            <h2>Annual Report</h2>
+            <p>每年的个人总结与数据报告。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+
+<style>
+  body {
+    margin: 0;
+    background: #08090c;
+    color: #f3f3f0;
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial,
+      sans-serif;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 30px 100px;
+  }
+
+  a {
+    color: #9b8cff;
+    text-decoration: none;
+    font-size: 13px;
+  }
+
+  header {
+    padding: 70px 0 90px;
+  }
+
+  .eyebrow,
+  .future-title {
+    color: #8e86b5;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    font-size: 80px;
+    letter-spacing: -4px;
+    margin: 25px 0 20px;
+  }
+
+  .intro {
+    color: #85868d;
+    line-height: 1.8;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .stat {
+    border: 1px solid #292a30;
+    padding: 30px;
+    min-height: 180px;
+  }
+
+  .stat span {
+    color: #5f6068;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .stat strong {
+    display: block;
+    margin-top: 45px;
+    font-size: 48px;
+    font-weight: 500;
+  }
+
+  .stat p {
+    color: #777880;
+    font-size: 13px;
+  }
+
+  .future {
+    margin-top: 100px;
+    border-top: 1px solid #292a30;
+  }
+
+  .future-title {
+    padding: 25px 0;
+  }
+
+  .module {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    padding: 28px 10px;
+    border-top: 1px solid #222329;
+  }
+
+  .module > span {
+    color: #5f6068;
+    font-family: monospace;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 24px;
+  }
+
+  .module p {
+    margin: 0;
+    color: #777880;
+    font-size: 13px;
+  }
+
+  @media (max-width: 700px) {
+    main {
+      padding: 40px 20px 80px;
+    }
+
+    h1 {
+      font-size: 60px;
+    }
+
+    .stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

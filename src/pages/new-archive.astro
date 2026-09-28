@@ -1,0 +1,524 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>新增案例 — YU之宝库</title>
+  </head>
+
+  <body>
+    <main>
+      <header class="topbar">
+        <a class="logo" href="/">YU之宝库</a>
+
+        <nav>
+          <a href="/archive">案例库</a>
+          <a href="/">首页</a>
+        </nav>
+      </header>
+
+      <section class="page-head">
+        <p class="eyebrow">CASE DATABASE</p>
+        <h1>新增案例</h1>
+      </section>
+
+      <form id="case-form">
+        <section class="form-section">
+          <div class="section-title">
+            <span>01</span>
+            <h2>基本信息</h2>
+          </div>
+
+          <div class="field">
+            <label for="title">案例名称</label>
+            <input
+              id="title"
+              name="title"
+              type="text"
+              placeholder="输入案例名称"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="type">法律类型</label>
+            <select id="type" name="type" required>
+              <option value="">请选择</option>
+              <option value="民商事">民商事</option>
+              <option value="劳动">劳动</option>
+              <option value="知识产权">知识产权</option>
+              <option value="资本市场">资本市场</option>
+              <option value="其他">其他</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="keywords">关键词</label>
+            <input
+              id="keywords"
+              name="keywords"
+              type="text"
+              placeholder="例如：合同解除、违约责任、格式条款"
+            />
+          </div>
+        </section>
+
+        <section class="form-section">
+          <div class="section-title">
+            <span>02</span>
+            <h2>案件内容</h2>
+          </div>
+
+          <div class="field">
+            <label for="result">结果</label>
+            <textarea
+              id="result"
+              name="result"
+              rows="4"
+              placeholder="填写案件最终结果"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="core_points">核心要点</label>
+            <textarea
+              id="core_points"
+              name="core_points"
+              rows="5"
+              placeholder="记录这个案例最值得记忆的法律要点"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="facts">案情</label>
+            <textarea
+              id="facts"
+              name="facts"
+              rows="8"
+              placeholder="记录案件基本事实、当事人关系、主要经过等"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="issues">争议焦点</label>
+            <textarea
+              id="issues"
+              name="issues"
+              rows="6"
+              placeholder="记录案件需要解决的主要法律问题"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="legal_basis">法律依据</label>
+            <textarea
+              id="legal_basis"
+              name="legal_basis"
+              rows="6"
+              placeholder="记录涉及的法律、司法解释、指导案例等"
+            ></textarea>
+          </div>
+
+          <div class="field">
+            <label for="related_cases">关联案例</label>
+            <textarea
+              id="related_cases"
+              name="related_cases"
+              rows="5"
+              placeholder="记录可以关联学习的其他案例"
+            ></textarea>
+          </div>
+        </section>
+
+        <section class="form-section private-section">
+          <div class="section-title">
+            <span>03</span>
+            <h2>我的解法</h2>
+            <span class="private-label">PRIVATE</span>
+          </div>
+
+          <p class="private-note">
+            记录自己的分析、处理思路、办案经验和复盘内容。
+          </p>
+
+          <div class="field">
+            <label for="my_solution">我的解法</label>
+            <textarea
+              id="my_solution"
+              name="my_solution"
+              rows="12"
+              placeholder="记录你的分析、处理方案、经验总结、反思等"
+            ></textarea>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <a href="/archive" class="cancel">取消</a>
+          <button id="save-button" type="submit">保存案例</button>
+        </div>
+
+        <p id="message" class="message"></p>
+      </form>
+    </main>
+  </body>
+</html>
+
+<script>
+  import { supabase } from "../lib/supabase";
+
+  const form = document.querySelector("#case-form") as HTMLFormElement | null;
+  const button = document.querySelector("#save-button") as HTMLButtonElement | null;
+  const message = document.querySelector("#message") as HTMLParagraphElement | null;
+
+  async function checkLogin() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      window.location.href = "/login";
+      return null;
+    }
+
+    return user;
+  }
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!button || !message) return;
+
+    const user = await checkLogin();
+
+    if (!user) return;
+
+    const formData = new FormData(form);
+
+    const title = String(formData.get("title") || "").trim();
+    const type = String(formData.get("type") || "").trim();
+    const keywords = String(formData.get("keywords") || "").trim();
+    const result = String(formData.get("result") || "").trim();
+    const core_points = String(formData.get("core_points") || "").trim();
+    const facts = String(formData.get("facts") || "").trim();
+    const issues = String(formData.get("issues") || "").trim();
+    const legal_basis = String(formData.get("legal_basis") || "").trim();
+    const related_cases = String(formData.get("related_cases") || "").trim();
+    const my_solution = String(formData.get("my_solution") || "").trim();
+
+    button.disabled = true;
+    button.textContent = "保存中……";
+    message.textContent = "";
+    message.className = "message";
+
+    const { error } = await supabase.from("archives").insert({
+      title,
+      type,
+      keywords,
+      result,
+      core_points,
+      facts,
+      issues,
+      legal_basis,
+      related_cases,
+      my_solution,
+      user_id: user.id,
+    });
+
+    if (error) {
+      message.textContent = `保存失败：${error.message}`;
+      message.className = "message error";
+      button.disabled = false;
+      button.textContent = "保存案例";
+      return;
+    }
+
+    message.textContent = "保存成功";
+    message.className = "message success";
+
+    form.reset();
+
+    setTimeout(() => {
+      window.location.href = "/archive";
+    }, 800);
+  });
+
+  checkLogin();
+</script>
+
+<style>
+  :global(*) {
+    box-sizing: border-box;
+  }
+
+  :global(body) {
+    margin: 0;
+    background:
+      radial-gradient(circle at 80% 10%, rgba(112, 88, 190, 0.12), transparent 30%),
+      radial-gradient(circle at 10% 40%, rgba(80, 65, 145, 0.08), transparent 35%),
+      #08090d;
+    color: #f3f2f6;
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+  }
+
+  main {
+    width: min(920px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 28px 0 100px;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 25px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .logo {
+    color: #f4f2f8;
+    text-decoration: none;
+    font-size: 17px;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  nav {
+    display: flex;
+    gap: 24px;
+  }
+
+  nav a {
+    color: #85838e;
+    text-decoration: none;
+    font-size: 12px;
+    transition: color 0.2s ease;
+  }
+
+  nav a:hover {
+    color: #c8bdfc;
+  }
+
+  .page-head {
+    padding: 85px 0 55px;
+  }
+
+  .eyebrow {
+    margin: 0 0 18px;
+    color: #9b8cff;
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 48px;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    font-weight: 500;
+  }
+
+  form {
+    padding-bottom: 40px;
+  }
+
+  .form-section {
+    margin-bottom: 55px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.018);
+  }
+
+  .private-section {
+    border-color: rgba(155, 140, 255, 0.2);
+    background: rgba(115, 96, 190, 0.035);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .section-title > span:first-child {
+    color: #8e80dc;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+
+  .private-label {
+    margin-left: auto;
+    padding: 5px 8px;
+    border: 1px solid rgba(155, 140, 255, 0.3);
+    color: #9b8cff;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+
+  .private-note {
+    margin: -10px 0 28px;
+    color: #777581;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .field {
+    margin-bottom: 26px;
+  }
+
+  .field:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 10px;
+    color: #bdbac6;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    outline: none;
+    background: rgba(0, 0, 0, 0.16);
+    color: #eeeeef;
+    font: inherit;
+    font-size: 13px;
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  input,
+  select {
+    height: 46px;
+    padding: 0 14px;
+  }
+
+  textarea {
+    min-height: 110px;
+    padding: 13px 14px;
+    line-height: 1.8;
+    resize: vertical;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #575660;
+  }
+
+  select {
+    appearance: none;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: rgba(155, 140, 255, 0.55);
+    background: rgba(155, 140, 255, 0.035);
+  }
+
+  .form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 20px;
+    padding-top: 10px;
+  }
+
+  .cancel {
+    color: #777581;
+    text-decoration: none;
+    font-size: 12px;
+  }
+
+  .cancel:hover {
+    color: #c3becd;
+  }
+
+  button {
+    height: 44px;
+    padding: 0 24px;
+    border: 1px solid rgba(155, 140, 255, 0.45);
+    background: rgba(155, 140, 255, 0.08);
+    color: #ddd8f3;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  button:hover:not(:disabled) {
+    border-color: rgba(155, 140, 255, 0.7);
+    background: rgba(155, 140, 255, 0.15);
+  }
+
+  button:disabled {
+    opacity: 0.55;
+    cursor: wait;
+  }
+
+  .message {
+    min-height: 20px;
+    margin: 20px 0 0;
+    text-align: right;
+    font-size: 12px;
+  }
+
+  .message.success {
+    color: #a9d6b3;
+  }
+
+  .message.error {
+    color: #df9292;
+  }
+
+  @media (max-width: 700px) {
+    main {
+      width: min(100% - 28px, 920px);
+      padding-top: 18px;
+    }
+
+    nav {
+      gap: 14px;
+    }
+
+    .page-head {
+      padding: 60px 0 40px;
+    }
+
+    h1 {
+      font-size: 40px;
+    }
+
+    .form-section {
+      padding: 22px;
+    }
+
+    .form-actions {
+      justify-content: space-between;
+    }
+  }
+</style>

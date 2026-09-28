@@ -1,0 +1,578 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>案例库｜YU之宝库</title>
+
+    <style>
+      :global(*) {
+        box-sizing: border-box;
+      }
+
+      :global(body) {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(
+            circle at 50% 0%,
+            rgba(130, 80, 180, 0.12),
+            transparent 35%
+          ),
+          linear-gradient(180deg, #100d19 0%, #09070e 100%);
+        color: #eeeaf5;
+        font-family:
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          "PingFang SC",
+          "Hiragino Sans GB",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+
+      .topbar {
+        height: 72px;
+        border-bottom: 1px solid rgba(190, 160, 220, 0.12);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 42px;
+      }
+
+      .logo {
+        color: #f2edf8;
+        text-decoration: none;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 24px;
+      }
+
+      .nav a {
+        color: #aaa2b8;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .nav a:hover {
+        color: #e5d8f4;
+      }
+
+      main {
+        width: min(1080px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 65px 0 100px;
+      }
+
+      .page-head {
+        margin-bottom: 38px;
+      }
+
+      .eyebrow {
+        color: #8f7aa8;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      .search-box {
+        margin-bottom: 34px;
+      }
+
+      .search-box input {
+        width: 100%;
+        height: 48px;
+        border: 1px solid rgba(190, 160, 220, 0.18);
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.025);
+        color: #eeeaf5;
+        padding: 0 16px;
+        font: inherit;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .search-box input:focus {
+        border-color: rgba(180, 140, 220, 0.5);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .search-box input::placeholder {
+        color: #696171;
+      }
+
+      .categories {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-bottom: 50px;
+      }
+
+      .category {
+        min-height: 72px;
+        border: 1px solid rgba(190, 160, 220, 0.13);
+        background: rgba(255, 255, 255, 0.018);
+        color: #aaa2b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font: inherit;
+        font-size: 13px;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          color 0.2s ease;
+      }
+
+      .category:hover {
+        border-color: rgba(190, 160, 220, 0.32);
+        background: rgba(150, 110, 190, 0.06);
+        color: #ddd4e7;
+      }
+
+      .category.active {
+        border-color: rgba(190, 160, 220, 0.45);
+        background: rgba(150, 110, 190, 0.1);
+        color: #eee7f4;
+      }
+
+      .list-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .list-title {
+        color: #c8bdd5;
+        font-size: 13px;
+        letter-spacing: 0.12em;
+      }
+
+      .count {
+        color: #6f6878;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+
+      .archive-list {
+        display: grid;
+        gap: 20px;
+      }
+
+      /* 一个案例 = 一个完整的独立框 */
+      .archive-card {
+        border: 1px solid rgba(190, 160, 220, 0.22);
+        background: rgba(255, 255, 255, 0.025);
+        padding: 28px 30px;
+        border-radius: 2px;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          transform 0.2s ease;
+      }
+
+      .archive-card:hover {
+        border-color: rgba(190, 160, 220, 0.42);
+        background: rgba(150, 110, 190, 0.05);
+        transform: translateY(-1px);
+      }
+
+      /* 案例名称 + 法律类型 */
+      .archive-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 4px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(190, 160, 220, 0.12);
+      }
+
+      .archive-card h2 {
+        margin: 0;
+        font-size: 19px;
+        font-weight: 500;
+        line-height: 1.5;
+      }
+
+      .archive-card h2 a {
+        color: #eeeaf5;
+        text-decoration: none;
+      }
+
+      .archive-card h2 a:hover {
+        color: #d8c8e6;
+      }
+
+      .archive-type {
+        color: #927baa;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        white-space: nowrap;
+        padding-top: 4px;
+      }
+
+      /* 案例内容区域 */
+      .archive-content {
+        display: grid;
+      }
+
+      /* 每一项单独占一行，并且有自己的上下留白 */
+      .info-block {
+        padding: 17px 0;
+        border-bottom: 1px solid rgba(190, 160, 220, 0.08);
+      }
+
+      .info-block:last-child {
+        border-bottom: none;
+        padding-bottom: 2px;
+      }
+
+      .info-block:first-child {
+        padding-top: 18px;
+      }
+
+      .label {
+        color: #81768d;
+        font-size: 11px;
+        margin-bottom: 8px;
+        letter-spacing: 0.05em;
+      }
+
+      .value {
+        color: #c5bdce;
+        font-size: 13px;
+        line-height: 1.85;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .empty {
+        border: 1px solid rgba(190, 160, 220, 0.12);
+        padding: 34px 24px;
+        text-align: center;
+        color: #777080;
+        font-size: 13px;
+      }
+
+      .empty a {
+        display: inline-block;
+        margin-top: 14px;
+        color: #a48bb8;
+        text-decoration: none;
+      }
+
+      .empty a:hover {
+        color: #d4c2df;
+      }
+
+      @media (max-width: 760px) {
+        .topbar {
+          padding: 0 20px;
+        }
+
+        main {
+          width: min(100% - 28px, 1080px);
+          padding-top: 45px;
+        }
+
+        .categories {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .category:last-child {
+          grid-column: span 2;
+        }
+
+        .archive-card {
+          padding: 22px 20px;
+        }
+
+        .archive-head {
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .archive-type {
+          padding-top: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="topbar">
+      <a class="logo" href="/">YU之宝库</a>
+
+      <nav class="nav">
+        <a href="/archive">案例库</a>
+        <a href="/new-archive">新增案例</a>
+        <a href="/">首页</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="page-head">
+        <div class="eyebrow">CASE LIBRARY</div>
+        <h1>案例库</h1>
+      </div>
+
+      <div class="search-box">
+        <input
+          id="search"
+          type="search"
+          placeholder="搜索案例名称、关键词、案情、争议焦点、法律依据……"
+        />
+      </div>
+
+      <div class="categories">
+        <button class="category active" data-type="全部">
+          全部
+        </button>
+
+        <button class="category" data-type="民商事">
+          民商事
+        </button>
+
+        <button class="category" data-type="劳动">
+          劳动
+        </button>
+
+        <button class="category" data-type="知识产权">
+          知识产权
+        </button>
+
+        <button class="category" data-type="资本市场">
+          资本市场
+        </button>
+
+        <button class="category" data-type="其他">
+          其他
+        </button>
+      </div>
+
+      <div class="list-head">
+        <div class="list-title">CASES</div>
+        <div class="count" id="count">读取中……</div>
+      </div>
+
+      <div id="archive-list" class="archive-list">
+        <div class="empty">
+          正在读取案例……
+        </div>
+      </div>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const archiveList =
+        document.querySelector("#archive-list") as HTMLElement | null;
+
+      const count =
+        document.querySelector("#count") as HTMLElement | null;
+
+      const search =
+        document.querySelector("#search") as HTMLInputElement | null;
+
+      const categoryButtons =
+        document.querySelectorAll<HTMLButtonElement>(".category");
+
+      let allArchives: any[] = [];
+      let currentType = "全部";
+
+      function renderArchives() {
+        if (!archiveList || !count) {
+          return;
+        }
+
+        const keyword =
+          search?.value.trim().toLowerCase() ?? "";
+
+        const filtered = allArchives.filter((archive) => {
+          const typeMatch =
+            currentType === "全部" ||
+            archive.type === currentType;
+
+          if (!typeMatch) {
+            return false;
+          }
+
+          if (!keyword) {
+            return true;
+          }
+
+          const searchableText = [
+            archive.title,
+            archive.keywords,
+            archive.result,
+            archive.core_points,
+            archive.facts,
+            archive.issues,
+            archive.legal_basis,
+            archive.related_cases,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+          return searchableText.includes(keyword);
+        });
+
+        count.textContent = `${filtered.length} RECORDS`;
+
+        if (filtered.length === 0) {
+          archiveList.innerHTML = `
+            <div class="empty">
+              没有找到符合条件的案例。
+            </div>
+          `;
+
+          return;
+        }
+
+        archiveList.innerHTML = filtered
+          .map(
+            (archive) => `
+              <article class="archive-card">
+
+                <div class="archive-head">
+                  <h2>
+                    <a href="/archive-detail?id=${encodeURIComponent(archive.id)}">
+                      ${archive.title || "未命名案例"}
+                    </a>
+                  </h2>
+
+                  <div class="archive-type">
+                    ${archive.type || "未分类"}
+                  </div>
+                </div>
+
+                <div class="archive-content">
+
+                  ${
+                    archive.keywords
+                      ? `
+                        <div class="info-block">
+                          <div class="label">关键词</div>
+                          <div class="value">${archive.keywords}</div>
+                        </div>
+                      `
+                      : ""
+                  }
+
+                  ${
+                    archive.result
+                      ? `
+                        <div class="info-block">
+                          <div class="label">结果</div>
+                          <div class="value">${archive.result}</div>
+                        </div>
+                      `
+                      : ""
+                  }
+
+                  ${
+                    archive.core_points
+                      ? `
+                        <div class="info-block">
+                          <div class="label">核心要点</div>
+                          <div class="value">${archive.core_points}</div>
+                        </div>
+                      `
+                      : ""
+                  }
+
+                </div>
+              </article>
+            `
+          )
+          .join("");
+      }
+
+      async function loadArchives() {
+        if (!archiveList || !count) {
+          return;
+        }
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          count.textContent = "PRIVATE";
+
+          archiveList.innerHTML = `
+            <div class="empty">
+              <p>这是私人档案空间。</p>
+              <a href="/login">登录后查看 →</a>
+            </div>
+          `;
+
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("archives")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error(error);
+
+          count.textContent = "ERROR";
+
+          archiveList.innerHTML = `
+            <div class="empty">
+              读取案例失败，请稍后再试。
+            </div>
+          `;
+
+          return;
+        }
+
+        allArchives = data ?? [];
+
+        renderArchives();
+      }
+
+      categoryButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          currentType =
+            button.dataset.type ?? "全部";
+
+          categoryButtons.forEach((item) => {
+            item.classList.remove("active");
+          });
+
+          button.classList.add("active");
+
+          renderArchives();
+        });
+      });
+
+      search?.addEventListener("input", () => {
+        renderArchives();
+      });
+
+      loadArchives();
+    </script>
+  </body>
+</html>

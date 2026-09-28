@@ -1,0 +1,1000 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>合同修改常用表述 · YU之宝库</title>
+  </head>
+
+  <body>
+    <main class="main">
+
+      <div class="topbar">
+
+        <a
+          href="/contract-clauses"
+          class="back"
+        >
+          ← 返回合同修改常用表述
+        </a>
+
+        <span class="private-label">
+          PRIVATE
+        </span>
+
+      </div>
+
+
+      <div
+        id="loading"
+        class="loading"
+      >
+        正在读取……
+      </div>
+
+
+      <div
+        id="error"
+        class="error"
+        style="display: none;"
+      >
+        读取失败
+      </div>
+
+
+      <section
+        id="content"
+        style="display: none;"
+      >
+
+        <div class="page-label">
+          CONTRACT CLAUSE
+        </div>
+
+
+        <div class="title-row">
+
+          <h1 id="title">
+            合同表述
+          </h1>
+
+
+          <button
+            id="edit-button"
+            class="edit-button"
+            style="display: none;"
+          >
+            编辑
+          </button>
+
+        </div>
+
+
+        <div
+          id="view-content"
+          class="clause-content"
+        ></div>
+
+
+        <div
+          id="edit-area"
+          style="display: none;"
+        >
+
+          <textarea
+            id="edit-content"
+            class="edit-textarea"
+            placeholder="请输入合同表述"
+          ></textarea>
+
+
+          <div class="edit-actions">
+
+            <button
+              id="cancel-button"
+              class="cancel-button"
+            >
+              取消
+            </button>
+
+
+            <button
+              id="save-button"
+              class="save-button"
+            >
+              保存
+            </button>
+
+          </div>
+
+
+          <div
+            id="save-message"
+            class="save-message"
+          ></div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+
+      /*
+       * 页面元素
+       */
+
+      const loading =
+        document.querySelector(
+          "#loading"
+        ) as HTMLElement;
+
+      const errorBox =
+        document.querySelector(
+          "#error"
+        ) as HTMLElement;
+
+      const content =
+        document.querySelector(
+          "#content"
+        ) as HTMLElement;
+
+      const titleElement =
+        document.querySelector(
+          "#title"
+        ) as HTMLElement;
+
+      const viewContent =
+        document.querySelector(
+          "#view-content"
+        ) as HTMLElement;
+
+      const editButton =
+        document.querySelector(
+          "#edit-button"
+        ) as HTMLButtonElement;
+
+      const editArea =
+        document.querySelector(
+          "#edit-area"
+        ) as HTMLElement;
+
+      const editContent =
+        document.querySelector(
+          "#edit-content"
+        ) as HTMLTextAreaElement;
+
+      const cancelButton =
+        document.querySelector(
+          "#cancel-button"
+        ) as HTMLButtonElement;
+
+      const saveButton =
+        document.querySelector(
+          "#save-button"
+        ) as HTMLButtonElement;
+
+      const saveMessage =
+        document.querySelector(
+          "#save-message"
+        ) as HTMLElement;
+
+
+      /*
+       * 当前状态
+       */
+
+      let currentContent = "";
+
+      let canEdit = false;
+
+
+      /*
+       * 错误提示
+       */
+
+      function showError(
+        message: string
+      ) {
+
+        loading.style.display =
+          "none";
+
+        content.style.display =
+          "none";
+
+        errorBox.textContent =
+          message;
+
+        errorBox.style.display =
+          "block";
+      }
+
+
+      /*
+       * 读取案例
+       */
+
+      async function loadClause() {
+
+        const params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        const id =
+          params.get("id");
+
+
+        if (!id) {
+
+          showError(
+            "没有找到对应的合同表述编号。"
+          );
+
+          return;
+        }
+
+
+        /*
+         * 检查登录
+         */
+
+        const {
+          data: {
+            user
+          }
+        } =
+          await supabase.auth.getUser();
+
+
+        if (!user) {
+
+          window.location.href =
+            "/login";
+
+          return;
+        }
+
+
+        /*
+         * 读取合同内容
+         */
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from("contract_clauses")
+            .select(
+              "id, category, content"
+            )
+            .eq(
+              "id",
+              id
+            )
+            .single();
+
+
+        if (error || !data) {
+
+          console.error(
+            "读取合同内容失败：",
+            error
+          );
+
+          showError(
+            "你没有权限查看这个内容，或者内容不存在。"
+          );
+
+          return;
+        }
+
+
+        /*
+         * 保存当前内容
+         */
+
+        currentContent =
+          data.content || "";
+
+
+        /*
+         * 显示标题
+         */
+
+        titleElement.textContent =
+          data.category ||
+          "合同表述";
+
+
+        /*
+         * 显示内容
+         */
+
+        viewContent.textContent =
+          currentContent;
+
+
+        /*
+         * ==========================
+         * 关键修改：
+         * 不再直接读取权限表
+         * 改用安全函数判断编辑权限
+         * ==========================
+         */
+
+        const {
+          data: editPermission,
+          error: editPermissionError
+        } =
+          await supabase.rpc(
+            "can_edit_contract_clauses"
+          );
+
+
+        console.log(
+          "编辑权限：",
+          editPermission
+        );
+
+
+        if (
+          !editPermissionError &&
+          editPermission === true
+        ) {
+
+          canEdit = true;
+
+          editButton.style.display =
+            "inline-flex";
+        }
+
+
+        /*
+         * 显示页面
+         */
+
+        loading.style.display =
+          "none";
+
+        content.style.display =
+          "block";
+      }
+
+
+      /*
+       * 编辑
+       */
+
+      editButton.addEventListener(
+        "click",
+        () => {
+
+          if (!canEdit) {
+            return;
+          }
+
+
+          editContent.value =
+            currentContent;
+
+
+          viewContent.style.display =
+            "none";
+
+
+          editArea.style.display =
+            "block";
+
+
+          editButton.style.display =
+            "none";
+
+
+          saveMessage.textContent =
+            "";
+        }
+      );
+
+
+      /*
+       * 取消编辑
+       */
+
+      cancelButton.addEventListener(
+        "click",
+        () => {
+
+          editContent.value =
+            currentContent;
+
+
+          editArea.style.display =
+            "none";
+
+
+          viewContent.style.display =
+            "block";
+
+
+          if (canEdit) {
+
+            editButton.style.display =
+              "inline-flex";
+          }
+
+
+          saveMessage.textContent =
+            "";
+        }
+      );
+
+
+      /*
+       * 保存
+       */
+
+      saveButton.addEventListener(
+        "click",
+        async () => {
+
+          if (!canEdit) {
+            return;
+          }
+
+
+          const params =
+            new URLSearchParams(
+              window.location.search
+            );
+
+          const id =
+            params.get("id");
+
+
+          if (!id) {
+
+            saveMessage.textContent =
+              "没有找到合同表述编号。";
+
+            return;
+          }
+
+
+          const newContent =
+            editContent.value.trim();
+
+
+          if (!newContent) {
+
+            saveMessage.textContent =
+              "内容不能为空。";
+
+            return;
+          }
+
+
+          saveButton.disabled =
+            true;
+
+          saveButton.textContent =
+            "保存中……";
+
+          saveMessage.textContent =
+            "";
+
+
+          /*
+           * 更新数据库
+           */
+
+          const {
+            error
+          } =
+            await supabase
+              .from("contract_clauses")
+              .update({
+                content:
+                  newContent,
+
+                updated_at:
+                  new Date().toISOString()
+              })
+              .eq(
+                "id",
+                id
+              );
+
+
+          if (error) {
+
+            console.error(
+              "保存失败：",
+              error
+            );
+
+            saveMessage.textContent =
+              "保存失败：" +
+              error.message;
+
+            saveButton.disabled =
+              false;
+
+            saveButton.textContent =
+              "保存";
+
+            return;
+          }
+
+
+          /*
+           * 保存成功
+           */
+
+          currentContent =
+            newContent;
+
+
+          viewContent.textContent =
+            newContent;
+
+
+          editArea.style.display =
+            "none";
+
+
+          viewContent.style.display =
+            "block";
+
+
+          editButton.style.display =
+            "inline-flex";
+
+
+          saveButton.disabled =
+            false;
+
+          saveButton.textContent =
+            "保存";
+
+          saveMessage.textContent =
+            "";
+        }
+      );
+
+
+      /*
+       * 开始读取
+       */
+
+      loadClause();
+    </script>
+  </body>
+</html>
+
+
+<style>
+
+  * {
+    box-sizing: border-box;
+  }
+
+
+  :root {
+    --text: #eeeeec;
+    --muted: #777681;
+    --dim: #4a4953;
+    --border: rgba(
+      173,
+      160,
+      226,
+      0.16
+    );
+    --purple: #aaa0df;
+    --bg: #0b0b0e;
+  }
+
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+
+    background:
+      var(--bg);
+
+    color:
+      var(--text);
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "SF Pro Display",
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+  }
+
+
+  body {
+    min-height: 100vh;
+  }
+
+
+  .main {
+    width:
+      min(
+        900px,
+        calc(100% - 48px)
+      );
+
+    margin:
+      0 auto;
+
+    padding:
+      48px 0 100px;
+  }
+
+
+  .topbar {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    margin-bottom:
+      70px;
+  }
+
+
+  .back {
+    color:
+      var(--muted);
+
+    text-decoration:
+      none;
+
+    font-size:
+      13px;
+
+    letter-spacing:
+      0.03em;
+
+    transition:
+      color 0.2s ease;
+  }
+
+
+  .back:hover {
+    color:
+      var(--text);
+  }
+
+
+  .private-label {
+    color:
+      var(--purple);
+
+    font-size:
+      10px;
+
+    letter-spacing:
+      0.18em;
+  }
+
+
+  .loading,
+  .error {
+    color:
+      var(--muted);
+
+    font-size:
+      14px;
+
+    line-height:
+      1.8;
+  }
+
+
+  .error {
+    color:
+      #b6aeca;
+  }
+
+
+  .page-label {
+    color:
+      var(--dim);
+
+    font-size:
+      10px;
+
+    letter-spacing:
+      0.2em;
+
+    margin-bottom:
+      18px;
+  }
+
+
+  .title-row {
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap:
+      24px;
+
+    margin-bottom:
+      38px;
+  }
+
+
+  h1 {
+    margin:
+      0;
+
+    font-size:
+      32px;
+
+    font-weight:
+      500;
+
+    letter-spacing:
+      0.02em;
+  }
+
+
+  .edit-button,
+  .cancel-button,
+  .save-button {
+    border:
+      1px solid var(--border);
+
+    background:
+      transparent;
+
+    color:
+      var(--muted);
+
+    padding:
+      9px 16px;
+
+    font-size:
+      12px;
+
+    cursor:
+      pointer;
+
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+
+  .edit-button:hover,
+  .cancel-button:hover {
+    color:
+      var(--text);
+
+    border-color:
+      rgba(
+        173,
+        160,
+        226,
+        0.35
+      );
+  }
+
+
+  .save-button {
+    color:
+      var(--purple);
+
+    border-color:
+      rgba(
+        173,
+        160,
+        226,
+        0.3
+      );
+  }
+
+
+  .save-button:hover {
+    color:
+      var(--text);
+
+    border-color:
+      rgba(
+        173,
+        160,
+        226,
+        0.5
+      );
+  }
+
+
+  .save-button:disabled {
+    opacity:
+      0.5;
+
+    cursor:
+      default;
+  }
+
+
+  .clause-content {
+    min-height:
+      260px;
+
+    padding:
+      28px 0;
+
+    border-top:
+      1px solid var(--border);
+
+    border-bottom:
+      1px solid var(--border);
+
+    color:
+      #c9c8cf;
+
+    font-size:
+      15px;
+
+    line-height:
+      2;
+
+    white-space:
+      pre-wrap;
+  }
+
+
+  .edit-textarea {
+    display:
+      block;
+
+    width:
+      100%;
+
+    min-height:
+      360px;
+
+    padding:
+      24px;
+
+    resize:
+      vertical;
+
+    border:
+      1px solid var(--border);
+
+    outline:
+      none;
+
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.02
+      );
+
+    color:
+      var(--text);
+
+    font:
+      inherit;
+
+    font-size:
+      15px;
+
+    line-height:
+      2;
+  }
+
+
+  .edit-textarea:focus {
+    border-color:
+      rgba(
+        173,
+        160,
+        226,
+        0.35
+      );
+  }
+
+
+  .edit-actions {
+    display:
+      flex;
+
+    justify-content:
+      flex-end;
+
+    gap:
+      10px;
+
+    margin-top:
+      18px;
+  }
+
+
+  .save-message {
+    margin-top:
+      12px;
+
+    color:
+      var(--muted);
+
+    font-size:
+      12px;
+
+    text-align:
+      right;
+  }
+
+
+  @media (max-width: 640px) {
+
+    .main {
+      width:
+        min(
+          100% - 32px,
+          900px
+        );
+
+      padding-top:
+        32px;
+    }
+
+
+    .topbar {
+      margin-bottom:
+        50px;
+    }
+
+
+    h1 {
+      font-size:
+        26px;
+    }
+
+
+    .title-row {
+      align-items:
+        flex-start;
+    }
+
+
+    .clause-content {
+      font-size:
+        14px;
+    }
+  }
+
+</style>

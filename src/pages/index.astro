@@ -1,11 +1,1792 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>YU之宝库</title>
+  </head>
+
+  <body>
+
+    <!-- 星空背景 -->
+    <div class="stars stars-one"></div>
+    <div class="stars stars-two"></div>
+    <div class="stars stars-three"></div>
+
+    <!-- 紫色星云 -->
+    <div class="nebula nebula-one"></div>
+    <div class="nebula nebula-two"></div>
+
+
+    <main>
+
+      <!-- 顶部导航 -->
+      <header class="topbar">
+
+        <a href="/" class="logo">
+          YU之宝库
+        </a>
+
+        <nav>
+          <a href="/archive">案例</a>
+          <a href="/login">登录</a>
+        </nav>
+
+      </header>
+
+
+      <!-- 主视觉 -->
+      <section class="hero">
+
+        <div class="hero-label">
+          <span class="dot"></span>
+          LEGAL KNOWLEDGE
+        </div>
+
+
+        <h1>
+          <span>YU之宝库</span>
+        </h1>
+
+
+        <div class="hero-bottom">
+
+          <div></div>
+
+          <div
+            class="time"
+            id="clock"
+          >
+            00:00:00
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- 搜索 -->
+      <section class="search-wrap">
+
+        <div class="search-box">
+
+          <span class="search-symbol">
+            ⌕
+          </span>
+
+
+          <input
+            id="search"
+            type="text"
+            placeholder="搜索案例、关键词……"
+            autocomplete="off"
+          />
+
+
+          <span class="search-label">
+            ENTER
+          </span>
+
+        </div>
+
+      </section>
+
+
+      <!-- 法律分类 -->
+      <section class="categories">
+
+        <div class="section-heading">
+
+          <span>
+            法律分类
+          </span>
+
+          <span>
+            06
+          </span>
+
+        </div>
+
+
+        <div class="category-grid">
+
+
+          <a
+            href="/archive?type=民商事"
+            class="category-card"
+          >
+
+            <span class="small">
+              01
+            </span>
+
+            <span class="title">
+              民商事
+            </span>
+
+            <span class="arrow">
+              ↗
+            </span>
+
+          </a>
+
+
+          <a
+            href="/archive?type=劳动"
+            class="category-card"
+          >
+
+            <span class="small">
+              02
+            </span>
+
+            <span class="title">
+              劳动
+            </span>
+
+            <span class="arrow">
+              ↗
+            </span>
+
+          </a>
+
+
+          <a
+            href="/archive?type=知识产权"
+            class="category-card"
+          >
+
+            <span class="small">
+              03
+            </span>
+
+            <span class="title">
+              知识产权
+            </span>
+
+            <span class="arrow">
+              ↗
+            </span>
+
+          </a>
+
+
+          <a
+            href="/archive?type=资本市场"
+            class="category-card"
+          >
+
+            <span class="small">
+              04
+            </span>
+
+            <span class="title">
+              资本市场
+            </span>
+
+            <span class="arrow">
+              ↗
+            </span>
+
+          </a>
+
+
+          <a
+            href="/archive?type=其他"
+            class="category-card"
+          >
+
+            <span class="small">
+              05
+            </span>
+
+            <span class="title">
+              其他
+            </span>
+
+            <span class="arrow">
+              ↗
+            </span>
+
+          </a>
+
+
+          <a
+            href="/archive"
+            class="category-card"
+          >
+
+            <span class="small">
+              ＋
+            </span>
+
+            <span class="title">
+              更多分类
+            </span>
+
+            <span class="arrow">
+              ↗
+            </span>
+
+          </a>
+
+
+        </div>
+
+      </section>
+
+
+      <!-- 私人资料 -->
+      <section class="private-section">
+
+        <div class="section-heading">
+
+          <span>
+            私人资料
+          </span>
+
+          <span>
+            LOCKED
+          </span>
+
+        </div>
+
+
+        <a
+          href="/contract-clauses"
+          class="private-card"
+        >
+
+          <div class="private-icon">
+            ◇
+          </div>
+
+
+          <div class="private-main">
+
+            <span>
+              合同修改常用表述
+            </span>
+
+            <small>
+              高权限访问
+            </small>
+
+          </div>
+
+
+          <div class="private-arrow">
+            →
+          </div>
+
+        </a>
+
+      </section>
+
+
+      <!-- 底部 -->
+      <footer>
+
+        <span>
+          YU
+        </span>
+
+        <span id="year"></span>
+
+      </footer>
+
+    </main>
+
+
+    <script>
+
+      /*
+       * ============================
+       * 时钟
+       * ============================
+       */
+
+      const clock =
+        document.querySelector("#clock");
+
+
+      function updateClock() {
+
+        if (!clock) {
+          return;
+        }
+
+
+        const now =
+          new Date();
+
+
+        const h =
+          String(
+            now.getHours()
+          ).padStart(2, "0");
+
+
+        const m =
+          String(
+            now.getMinutes()
+          ).padStart(2, "0");
+
+
+        const s =
+          String(
+            now.getSeconds()
+          ).padStart(2, "0");
+
+
+        clock.textContent =
+          `${h}:${m}:${s}`;
+
+      }
+
+
+      updateClock();
+
+
+      window.setInterval(
+        updateClock,
+        1000
+      );
+
+
+      /*
+       * ============================
+       * 年份
+       * ============================
+       */
+
+      const year =
+        document.querySelector("#year");
+
+
+      if (year) {
+
+        year.textContent =
+          String(
+            new Date().getFullYear()
+          );
+
+      }
+
+
+      /*
+       * ============================
+       * 搜索
+       * ============================
+       */
+
+      const search =
+        document.querySelector(
+          "#search"
+        ) as HTMLInputElement | null;
+
+
+      if (search) {
+
+        search.addEventListener(
+          "keydown",
+          (event: KeyboardEvent) => {
+
+            if (
+              event.key !== "Enter"
+            ) {
+              return;
+            }
+
+
+            const keyword =
+              search.value.trim();
+
+
+            if (!keyword) {
+              return;
+            }
+
+
+            window.location.href =
+              `/archive?search=${encodeURIComponent(
+                keyword
+              )}`;
+
+          }
+        );
+
+      }
+
+    </script>
+
+  </body>
+</html>
+
+
+<style>
+
+  /*
+   * ==================================
+   * 基础设置
+   * ==================================
+   */
+
+  * {
+    box-sizing: border-box;
+  }
+
+
+  :root {
+
+    --text:
+      #eeeeec;
+
+    --muted:
+      #777681;
+
+    --dim:
+      #4a4953;
+
+    --border:
+      rgba(
+        173,
+        160,
+        226,
+        0.16
+      );
+
+    --purple:
+      #aaa0df;
+
+    --purple-dark:
+      #7669aa;
+
+  }
+
+
+  html {
+    min-height: 100%;
+  }
+
+
+  body {
+
+    position: relative;
+
+    min-height: 100vh;
+
+    margin: 0;
+
+    overflow-x: hidden;
+
+    color:
+      var(--text);
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+
+
+    /*
+     * 深紫色渐变背景
+     */
+
+    background:
+
+      radial-gradient(
+        ellipse at 15% 10%,
+        rgba(
+          88,
+          65,
+          150,
+          0.25
+        ),
+        transparent 30%
+      ),
+
+      radial-gradient(
+        ellipse at 86% 23%,
+        rgba(
+          67,
+          48,
+          126,
+          0.22
+        ),
+        transparent 34%
+      ),
+
+      radial-gradient(
+        ellipse at 52% 83%,
+        rgba(
+          53,
+          38,
+          108,
+          0.23
+        ),
+        transparent 40%
+      ),
+
+      linear-gradient(
+        135deg,
+        #08070e 0%,
+        #100c1d 35%,
+        #0d0918 68%,
+        #05050a 100%
+      );
+
+  }
+
+
+  /*
+   * ==================================
+   * 星空
+   * ==================================
+   *
+   * 三层不同密度的星点。
+   *
+   * 不使用 JS。
+   * 不使用外部图片。
+   * 不使用外部字体。
+   */
+
+  .stars {
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    z-index: 0;
+
+    background-repeat:
+      no-repeat;
+
+  }
+
+
+  /*
+   * 第一层
+   * 稍亮、稍大的星星
+   */
+
+  .stars-one {
+
+    opacity: 0.72;
+
+    background-image:
+
+      radial-gradient(
+        circle at 4% 12%,
+        rgba(
+          235,
+          230,
+          255,
+          0.68
+        ) 0 0.8px,
+        transparent 1.2px
+      ),
+
+      radial-gradient(
+        circle at 17% 31%,
+        rgba(
+          220,
+          214,
+          255,
+          0.55
+        ) 0 0.7px,
+        transparent 1.1px
+      ),
+
+      radial-gradient(
+        circle at 29% 18%,
+        rgba(
+          235,
+          230,
+          255,
+          0.6
+        ) 0 0.8px,
+        transparent 1.2px
+      ),
+
+      radial-gradient(
+        circle at 41% 9%,
+        rgba(
+          215,
+          207,
+          255,
+          0.52
+        ) 0 0.7px,
+        transparent 1.1px
+      ),
+
+      radial-gradient(
+        circle at 53% 38%,
+        rgba(
+          235,
+          230,
+          255,
+          0.58
+        ) 0 0.8px,
+        transparent 1.2px
+      ),
+
+      radial-gradient(
+        circle at 64% 16%,
+        rgba(
+          220,
+          214,
+          255,
+          0.6
+        ) 0 0.8px,
+        transparent 1.2px
+      ),
+
+      radial-gradient(
+        circle at 74% 29%,
+        rgba(
+          225,
+          220,
+          255,
+          0.55
+        ) 0 0.7px,
+        transparent 1.1px
+      ),
+
+      radial-gradient(
+        circle at 85% 11%,
+        rgba(
+          235,
+          230,
+          255,
+          0.62
+        ) 0 0.8px,
+        transparent 1.2px
+      ),
+
+      radial-gradient(
+        circle at 96% 76%,
+        rgba(
+          220,
+          214,
+          255,
+          0.52
+        ) 0 0.7px,
+        transparent 1.1px
+      );
+
+  }
+
+
+  /*
+   * 第二层
+   * 更多、更小、更暗
+   */
+
+  .stars-two {
+
+    opacity: 0.55;
+
+    background-image:
+
+      radial-gradient(
+        circle at 8% 48%,
+        rgba(
+          190,
+          180,
+          245,
+          0.4
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 13% 73%,
+        rgba(
+          190,
+          180,
+          245,
+          0.32
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 23% 57%,
+        rgba(
+          205,
+          197,
+          250,
+          0.35
+        ) 0 0.55px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 34% 72%,
+        rgba(
+          180,
+          170,
+          235,
+          0.3
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 47% 76%,
+        rgba(
+          200,
+          192,
+          245,
+          0.34
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 59% 91%,
+        rgba(
+          190,
+          180,
+          245,
+          0.3
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 69% 61%,
+        rgba(
+          180,
+          170,
+          235,
+          0.34
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 79% 84%,
+        rgba(
+          190,
+          180,
+          245,
+          0.3
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 91% 47%,
+        rgba(
+          180,
+          170,
+          235,
+          0.34
+        ) 0 0.5px,
+        transparent 0.9px
+      ),
+
+      radial-gradient(
+        circle at 97% 24%,
+        rgba(
+          200,
+          192,
+          245,
+          0.3
+        ) 0 0.5px,
+        transparent 0.9px
+      );
+
+  }
+
+
+  /*
+   * 第三层
+   * 极淡的星尘
+   */
+
+  .stars-three {
+
+    opacity: 0.38;
+
+    background-image:
+
+      radial-gradient(
+        circle at 6% 88%,
+        rgba(
+          170,
+          160,
+          225,
+          0.25
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 19% 11%,
+        rgba(
+          190,
+          180,
+          240,
+          0.25
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 27% 43%,
+        rgba(
+          190,
+          180,
+          240,
+          0.22
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 38% 27%,
+        rgba(
+          180,
+          170,
+          230,
+          0.24
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 44% 93%,
+        rgba(
+          190,
+          180,
+          240,
+          0.2
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 56% 13%,
+        rgba(
+          190,
+          180,
+          240,
+          0.23
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 67% 46%,
+        rgba(
+          190,
+          180,
+          240,
+          0.2
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 77% 69%,
+        rgba(
+          180,
+          170,
+          230,
+          0.22
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 88% 36%,
+        rgba(
+          190,
+          180,
+          240,
+          0.24
+        ) 0 0.4px,
+        transparent 0.8px
+      ),
+
+      radial-gradient(
+        circle at 94% 91%,
+        rgba(
+          180,
+          170,
+          230,
+          0.2
+        ) 0 0.4px,
+        transparent 0.8px
+      );
+
+  }
+
+
+  /*
+   * ==================================
+   * 紫色星云
+   * ==================================
+   */
+
+  .nebula {
+
+    position: fixed;
+
+    width: 520px;
+
+    height: 520px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    filter:
+      blur(115px);
+
+    z-index: 0;
+
+  }
+
+
+  .nebula-one {
+
+    top: -280px;
+
+    left: -180px;
+
+    background:
+      rgba(
+        102,
+        78,
+        169,
+        0.2
+      );
+
+  }
+
+
+  .nebula-two {
+
+    right: -240px;
+
+    bottom: -270px;
+
+    background:
+      rgba(
+        70,
+        49,
+        135,
+        0.18
+      );
+
+  }
+
+
+  /*
+   * ==================================
+   * 主体
+   * ==================================
+   */
+
+  main {
+
+    position: relative;
+
+    z-index: 1;
+
+    width:
+      min(
+        1060px,
+        calc(100% - 56px)
+      );
+
+    margin: 0 auto;
+
+    padding:
+      32px 0 70px;
+
+  }
+
+
+  a {
+
+    color: inherit;
+
+    text-decoration: none;
+
+  }
+
+
+  /*
+   * ==================================
+   * 顶部导航
+   * ==================================
+   */
+
+  .topbar {
+
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content:
+      space-between;
+
+    border-bottom:
+      1px solid
+      var(--border);
+
+  }
+
+
+  /*
+   * 普通字体
+   */
+
+  .logo {
+
+    font-size: 17px;
+
+    font-weight: 500;
+
+    letter-spacing:
+      -0.6px;
+
+    /*
+     * 顶部标题也使用
+     * 白色 → 淡紫色
+     */
+
+    background:
+      linear-gradient(
+        110deg,
+        #ffffff 0%,
+        #f5f2ff 40%,
+        #c9c0ef 75%,
+        #aaa0df 100%
+      );
+
+    -webkit-background-clip:
+      text;
+
+    -webkit-text-fill-color:
+      transparent;
+
+    background-clip:
+      text;
+
+  }
+
+
+  nav {
+
+    display: flex;
+
+    gap: 25px;
+
+  }
+
+
+  nav a {
+
+    color:
+      #686772;
+
+    font-size: 10px;
+
+    transition:
+      color 0.2s ease;
+
+  }
+
+
+  nav a:hover {
+
+    color:
+      var(--purple);
+
+  }
+
+
+  /*
+   * ==================================
+   * Hero
+   * ==================================
+   */
+
+  .hero {
+
+    padding:
+      82px 0 48px;
+
+  }
+
+
+  .hero-label {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color:
+      var(--purple);
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+  }
+
+
+  .dot {
+
+    width: 5px;
+
+    height: 5px;
+
+    border-radius: 50%;
+
+    background:
+      var(--purple);
+
+    box-shadow:
+      0 0 10px
+      rgba(
+        170,
+        160,
+        223,
+        0.8
+      );
+
+  }
+
+
+  /*
+   * 主标题
+   */
+
+  h1 {
+
+    margin:
+      18px 0 0;
+
+    line-height: 1;
+
+    font-size: 44px;
+
+    font-weight: 400;
+
+    letter-spacing:
+      -2.5px;
+
+  }
+
+
+  h1 span {
+
+    /*
+     * 白色 → 淡紫色
+     */
+
+    background:
+      linear-gradient(
+        110deg,
+        #ffffff 0%,
+        #f5f2ff 30%,
+        #d8d1f3 60%,
+        #aaa0df 100%
+      );
+
+    -webkit-background-clip:
+      text;
+
+    -webkit-text-fill-color:
+      transparent;
+
+    background-clip:
+      text;
+
+  }
+
+
+  .hero-bottom {
+
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    align-items: center;
+
+    margin-top: 24px;
+
+  }
+
+
+  .time {
+
+    margin-left: auto;
+
+    color:
+      #55535f;
+
+    font-size: 10px;
+
+    letter-spacing: 1px;
+
+  }
+
+
+  /*
+   * ==================================
+   * 搜索框
+   * ==================================
+   */
+
+  .search-wrap {
+
+    margin-bottom: 55px;
+
+  }
+
+
+  .search-box {
+
+    height: 54px;
+
+    display: flex;
+
+    align-items: center;
+
+    border:
+      1px solid
+      var(--border);
+
+    background:
+      rgba(
+        8,
+        7,
+        14,
+        0.34
+      );
+
+    backdrop-filter:
+      blur(8px);
+
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+  }
+
+
+  .search-box:focus-within {
+
+    border-color:
+      rgba(
+        165,
+        153,
+        218,
+        0.48
+      );
+
+    box-shadow:
+      0 0 30px
+      rgba(
+        113,
+        98,
+        174,
+        0.08
+      );
+
+  }
+
+
+  .search-symbol {
+
+    padding-left: 17px;
+
+    color:
+      #777582;
+
+    font-size: 18px;
+
+  }
+
+
+  .search-box input {
+
+    flex: 1;
+
+    height: 100%;
+
+    padding:
+      0 15px;
+
+    border: 0;
+
+    outline: 0;
+
+    background:
+      transparent;
+
+    color:
+      var(--text);
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+  }
+
+
+  .search-box input::placeholder {
+
+    color:
+      #55545e;
+
+  }
+
+
+  .search-label {
+
+    padding-right: 17px;
+
+    color:
+      #41404a;
+
+    font-size: 8px;
+
+    letter-spacing: 1.5px;
+
+  }
+
+
+  /*
+   * ==================================
+   * 分类
+   * ==================================
+   */
+
+  .categories {
+
+    margin-bottom: 50px;
+
+  }
+
+
+  .section-heading {
+
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    margin-bottom: 14px;
+
+    color:
+      #5d5a68;
+
+    font-size: 9px;
+
+    letter-spacing: 1.5px;
+
+  }
+
+
+  .category-grid {
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(3, 1fr);
+
+    gap: 11px;
+
+  }
+
+
+  .category-card {
+
+    position: relative;
+
+    height: 126px;
+
+    padding: 16px;
+
+    border:
+      1px solid
+      var(--border);
+
+    display: flex;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      space-between;
+
+    background:
+      linear-gradient(
+        135deg,
+        rgba(
+          150,
+          136,
+          210,
+          0.035
+        ),
+        rgba(
+          9,
+          8,
+          15,
+          0.12
+        )
+      );
+
+    backdrop-filter:
+      blur(5px);
+
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+
+  }
+
+
+  .category-card:hover {
+
+    transform:
+      translateY(-3px);
+
+    border-color:
+      rgba(
+        165,
+        153,
+        218,
+        0.5
+      );
+
+    background:
+      linear-gradient(
+        135deg,
+        rgba(
+          150,
+          136,
+          210,
+          0.09
+        ),
+        rgba(
+          10,
+          9,
+          17,
+          0.2
+        )
+      );
+
+  }
+
+
+  .small {
+
+    color:
+      #565360;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+  }
+
+
+  .title {
+
+    font-size: 15px;
+
+    font-weight: 400;
+
+    letter-spacing:
+      -0.2px;
+
+  }
+
+
+  .arrow {
+
+    position: absolute;
+
+    right: 16px;
+
+    bottom: 15px;
+
+    color:
+      #5b5965;
+
+    font-size: 14px;
+
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+
+  }
+
+
+  .category-card:hover .arrow {
+
+    color:
+      var(--purple);
+
+    transform:
+      translate(
+        3px,
+        -3px
+      );
+
+  }
+
+
+  /*
+   * ==================================
+   * 私人资料
+   * ==================================
+   */
+
+  .private-section {
+
+    margin-bottom: 60px;
+
+  }
+
+
+  .private-card {
+
+    height: 76px;
+
+    padding:
+      0 17px;
+
+    display: flex;
+
+    align-items: center;
+
+    border:
+      1px solid
+      var(--border);
+
+    background:
+      rgba(
+        8,
+        7,
+        14,
+        0.28
+      );
+
+    backdrop-filter:
+      blur(7px);
+
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+
+  }
+
+
+  .private-card:hover {
+
+    border-color:
+      rgba(
+        165,
+        153,
+        218,
+        0.5
+      );
+
+    background:
+      rgba(
+        165,
+        153,
+        218,
+        0.035
+      );
+
+  }
+
+
+  .private-icon {
+
+    width: 32px;
+
+    height: 32px;
+
+    margin-right: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+      1px solid
+      #353341;
+
+    color:
+      var(--purple-dark);
+
+    font-size: 12px;
+
+  }
+
+
+  .private-main {
+
+    display: flex;
+
+    flex-direction:
+      column;
+
+    gap: 5px;
+
+  }
+
+
+  .private-main span {
+
+    color:
+      #c0bec6;
+
+    font-size: 12px;
+
+  }
+
+
+  .private-main small {
+
+    color:
+      #55545e;
+
+    font-size: 9px;
+
+  }
+
+
+  .private-arrow {
+
+    margin-left: auto;
+
+    color:
+      #55545e;
+
+    font-size: 15px;
+
+  }
+
+
+  /*
+   * ==================================
+   * Footer
+   * ==================================
+   */
+
+  footer {
+
+    padding-top: 18px;
+
+    border-top:
+      1px solid
+      rgba(
+        130,
+        120,
+        170,
+        0.1
+      );
+
+    display: flex;
+
+    justify-content:
+      space-between;
+
+    color:
+      #414049;
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+
+  }
+
+
+  /*
+   * ==================================
+   * 手机端
+   * ==================================
+   */
+
+  @media (max-width: 700px) {
+
+    main {
+
+      width:
+        calc(100% - 34px);
+
+      padding-top: 24px;
+
+    }
+
+
+    .hero {
+
+      padding:
+        60px 0 38px;
+
+    }
+
+
+    h1 {
+
+      font-size: 38px;
+
+    }
+
+
+    .category-grid {
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      gap: 9px;
+
+    }
+
+
+    .category-card {
+
+      height: 112px;
+
+    }
+
+
+    .search-label {
+
+      display: none;
+
+    }
+
+  }
+
+</style>
