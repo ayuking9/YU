@@ -1,0 +1,613 @@
+---
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Q&A · YU之宝库</title>
+  </head>
+
+  <body>
+    <main>
+      <header class="topbar">
+        <a href="/" class="logo">
+          YU之宝库
+        </a>
+
+        <nav>
+          <a href="/archive">案例</a>
+          <a href="/qa">Q&A</a>
+          <a href="/login">登录</a>
+        </nav>
+      </header>
+
+      <section class="page-head">
+        <a href="/qa" class="back">
+          ← 返回 Q&A
+        </a>
+
+        <div class="label">
+          LEGAL Q&A
+        </div>
+
+        <h1>
+          问题详情
+        </h1>
+      </section>
+
+      <section
+        id="loading"
+        class="status"
+      >
+        正在加载……
+      </section>
+
+      <section
+        id="error"
+        class="status error"
+        style="display:none;"
+      >
+        无法找到这条 Q&A。
+      </section>
+
+      <article
+        id="detail"
+        style="display:none;"
+      >
+        <div class="question-block">
+          <div class="section-label">
+            QUESTION
+          </div>
+
+          <h2 id="question"></h2>
+        </div>
+
+        <div class="answer-block">
+          <div class="section-label">
+            ANSWER
+          </div>
+
+          <div
+            id="answer"
+            class="answer"
+          ></div>
+        </div>
+
+        <div
+          id="keywords-wrap"
+          class="keywords-block"
+          style="display:none;"
+        >
+          <div class="section-label">
+            KEYWORDS
+          </div>
+
+          <div
+            id="keywords"
+            class="keywords"
+          ></div>
+        </div>
+
+        <div class="meta">
+          <span>
+            <span class="meta-label">
+              创建
+            </span>
+            <span id="created"></span>
+          </span>
+
+          <span>
+            <span class="meta-label">
+              更新
+            </span>
+            <span id="updated"></span>
+          </span>
+        </div>
+      </article>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const loading =
+        document.getElementById("loading");
+
+      const error =
+        document.getElementById("error");
+
+      const detail =
+        document.getElementById("detail");
+
+      const question =
+        document.getElementById("question");
+
+      const answer =
+        document.getElementById("answer");
+
+      const keywordsWrap =
+        document.getElementById(
+          "keywords-wrap"
+        );
+
+      const keywords =
+        document.getElementById("keywords");
+
+      const created =
+        document.getElementById("created");
+
+      const updated =
+        document.getElementById("updated");
+
+      function showError() {
+        if (loading) {
+          loading.style.display = "none";
+        }
+
+        if (detail) {
+          detail.style.display = "none";
+        }
+
+        if (error) {
+          error.style.display = "block";
+        }
+      }
+
+      function formatDate(
+        value: string | null | undefined
+      ) {
+        if (!value) {
+          return "—";
+        }
+
+        const date =
+          new Date(value);
+
+        if (
+          Number.isNaN(
+            date.getTime()
+          )
+        ) {
+          return "—";
+        }
+
+        return date.toLocaleString(
+          "zh-CN",
+          {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        );
+      }
+
+      function renderAnswer(
+        value: string | null | undefined
+      ) {
+        if (!answer) {
+          return;
+        }
+
+        /*
+         * 保留换行。
+         * 使用 textContent，避免把回答内容
+         * 当作 HTML 执行。
+         */
+        answer.textContent =
+          value || "";
+      }
+
+      async function loadQa() {
+        const params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        const id =
+          params.get("id");
+
+        if (!id) {
+          showError();
+          return;
+        }
+
+        const {
+          data: {
+            session,
+          },
+        } =
+          await supabase.auth.getSession();
+
+        if (!session) {
+          window.location.href =
+            "/login";
+          return;
+        }
+
+        const {
+          data,
+          error: queryError,
+        } =
+          await supabase
+            .from("qa")
+            .select(
+              "id, question, answer, keywords, created_at, updated_at"
+            )
+            .eq(
+              "id",
+              id
+            )
+            .eq(
+              "user_id",
+              session.user.id
+            )
+            .single();
+
+        if (
+          queryError ||
+          !data
+        ) {
+          showError();
+          return;
+        }
+
+        if (question) {
+          question.textContent =
+            data.question;
+        }
+
+        renderAnswer(
+          data.answer
+        );
+
+        if (
+          data.keywords &&
+          data.keywords.trim()
+        ) {
+          if (keywords) {
+            keywords.textContent =
+              data.keywords;
+          }
+
+          if (keywordsWrap) {
+            keywordsWrap.style.display =
+              "block";
+          }
+        }
+
+        if (created) {
+          created.textContent =
+            formatDate(
+              data.created_at
+            );
+        }
+
+        if (updated) {
+          updated.textContent =
+            formatDate(
+              data.updated_at
+            );
+        }
+
+        if (loading) {
+          loading.style.display =
+            "none";
+        }
+
+        if (detail) {
+          detail.style.display =
+            "block";
+        }
+      }
+
+      loadQa();
+    </script>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --text: #eeeeec;
+    --muted: #777681;
+    --dim: #4a4953;
+    --border: rgba(173, 160, 226, 0.16);
+    --purple: #aaa0df;
+  }
+
+  html {
+    min-height: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text);
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+
+    background:
+      radial-gradient(
+        ellipse at 15% 10%,
+        rgba(88, 65, 150, 0.25),
+        transparent 30%
+      ),
+      radial-gradient(
+        ellipse at 86% 23%,
+        rgba(67, 48, 126, 0.22),
+        transparent 34%
+      ),
+      radial-gradient(
+        ellipse at 52% 83%,
+        rgba(53, 38, 108, 0.23),
+        transparent 40%
+      ),
+      linear-gradient(
+        135deg,
+        #08070e 0%,
+        #100c1d 35%,
+        #0d0918 68%,
+        #05050a 100%
+      );
+  }
+
+  main {
+    width:
+      min(
+        900px,
+        calc(100% - 56px)
+      );
+
+    margin: 0 auto;
+    padding:
+      32px 0 80px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .topbar {
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content:
+      space-between;
+
+    border-bottom:
+      1px solid
+      var(--border);
+  }
+
+  .logo {
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.6px;
+
+    background:
+      linear-gradient(
+        110deg,
+        #ffffff 0%,
+        #f5f2ff 40%,
+        #c9c0ef 75%,
+        #aaa0df 100%
+      );
+
+    -webkit-background-clip:
+      text;
+
+    -webkit-text-fill-color:
+      transparent;
+
+    background-clip:
+      text;
+  }
+
+  nav {
+    display: flex;
+    gap: 25px;
+  }
+
+  nav a {
+    color: #686772;
+    font-size: 10px;
+
+    transition:
+      color 0.2s ease;
+  }
+
+  nav a:hover {
+    color: var(--purple);
+  }
+
+  .page-head {
+    padding:
+      68px 0 46px;
+  }
+
+  .back {
+    display: inline-block;
+
+    margin-bottom: 34px;
+
+    color: #65636f;
+    font-size: 10px;
+
+    transition:
+      color 0.2s ease;
+  }
+
+  .back:hover {
+    color: var(--purple);
+  }
+
+  .label {
+    margin-bottom: 13px;
+
+    color: var(--purple);
+
+    font-size: 9px;
+    letter-spacing: 2px;
+  }
+
+  h1 {
+    margin: 0;
+
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: -1.5px;
+  }
+
+  .status {
+    padding:
+      45px 0;
+
+    color: #62606c;
+    font-size: 11px;
+  }
+
+  .status.error {
+    color: #77717f;
+  }
+
+  .question-block {
+    padding:
+      28px 0 35px;
+
+    border-top:
+      1px solid
+      var(--border);
+  }
+
+  .section-label {
+    margin-bottom: 16px;
+
+    color: #65636f;
+
+    font-size: 8px;
+    letter-spacing: 1.8px;
+  }
+
+  h2 {
+    max-width: 820px;
+
+    margin: 0;
+
+    color: #e8e6eb;
+
+    font-size: 22px;
+    line-height: 1.6;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
+
+  .answer-block {
+    padding:
+      28px 0 36px;
+
+    border-top:
+      1px solid
+      var(--border);
+  }
+
+  .answer {
+    color: #c8c5cf;
+
+    font-size: 13px;
+    line-height: 2;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+  }
+
+  .keywords-block {
+    padding:
+      28px 0 34px;
+
+    border-top:
+      1px solid
+      var(--border);
+  }
+
+  .keywords {
+    color: #9d96b8;
+
+    font-size: 11px;
+    line-height: 1.8;
+
+    word-break: break-word;
+  }
+
+  .meta {
+    padding:
+      22px 0;
+
+    border-top:
+      1px solid
+      rgba(
+        173,
+        160,
+        226,
+        0.1
+      );
+
+    display: flex;
+    gap: 30px;
+
+    color: #4f4d58;
+
+    font-size: 9px;
+  }
+
+  .meta-label {
+    margin-right: 6px;
+    color: #3f3d47;
+  }
+
+  @media (max-width: 700px) {
+    main {
+      width:
+        calc(100% - 34px);
+
+      padding-top: 24px;
+    }
+
+    .page-head {
+      padding:
+        52px 0 36px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 19px;
+    }
+
+    .answer {
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .meta {
+      flex-direction:
+        column;
+      gap: 9px;
+    }
+  }
+</style>

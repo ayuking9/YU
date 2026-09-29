@@ -1,0 +1,317 @@
+---
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>新增 Q&A｜YU之宝库</title>
+
+    <style>
+      :global(body) {
+        margin: 0;
+        background:
+          radial-gradient(circle at 20% 10%, rgba(145, 100, 220, 0.12), transparent 35%),
+          radial-gradient(circle at 80% 80%, rgba(100, 80, 180, 0.08), transparent 35%),
+          #09070f;
+        color: #eeeaf7;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .page {
+        width: min(850px, calc(100% - 40px));
+        margin: 0 auto;
+        padding: 42px 0 80px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 50px;
+      }
+
+      .brand {
+        color: #f3efff;
+        text-decoration: none;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+      }
+
+      .back {
+        color: #9a91a9;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .back:hover {
+        color: #ddd1ef;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      .sub {
+        margin-bottom: 34px;
+        color: #82798f;
+        font-size: 13px;
+      }
+
+      .form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      label {
+        color: #b9afc7;
+        font-size: 13px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid rgba(170, 145, 205, 0.2);
+        outline: none;
+        background: rgba(255, 255, 255, 0.025);
+        color: #eeeaf7;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.7;
+        padding: 12px 14px;
+      }
+
+      input {
+        height: 46px;
+      }
+
+      textarea {
+        min-height: 180px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: rgba(180, 145, 235, 0.45);
+      }
+
+      input::placeholder,
+      textarea::placeholder {
+        color: #686171;
+      }
+
+      .hint {
+        color: #655e6d;
+        font-size: 11px;
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 8px;
+      }
+
+      button,
+      .cancel {
+        height: 42px;
+        padding: 0 20px;
+        border: 1px solid rgba(180, 145, 235, 0.32);
+        background: rgba(130, 90, 190, 0.08);
+        color: #ded0f7;
+        font-family: inherit;
+        font-size: 13px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      button:hover,
+      .cancel:hover {
+        border-color: rgba(190, 155, 245, 0.6);
+        background: rgba(140, 100, 210, 0.15);
+      }
+
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .message {
+        min-height: 20px;
+        color: #a79bb5;
+        font-size: 13px;
+      }
+
+      .error {
+        color: #c49bad;
+      }
+
+      @media (max-width: 700px) {
+        .page {
+          width: min(100% - 28px, 850px);
+          padding-top: 28px;
+        }
+
+        .topbar {
+          margin-bottom: 38px;
+        }
+
+        h1 {
+          font-size: 25px;
+        }
+
+        .actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <a class="brand" href="/">YU之宝库</a>
+        <a class="back" href="/qa">← 返回 Q&A</a>
+      </div>
+
+      <h1>新增 Q&A</h1>
+      <div class="sub">记录一个日常法律问题及你的处理思路。</div>
+
+      <form class="form" id="qa-form">
+        <div class="field">
+          <label for="question">问题</label>
+          <input
+            id="question"
+            name="question"
+            type="text"
+            placeholder="例如：合同没有约定违约金，可以主张违约金吗？"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="answer">回答</label>
+          <textarea
+            id="answer"
+            name="answer"
+            placeholder="记录你的分析、法律依据和处理方式……"
+            required
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="keywords">关键词</label>
+          <input
+            id="keywords"
+            name="keywords"
+            type="text"
+            placeholder="例如：违约金、合同责任、损失赔偿"
+          />
+          <div class="hint">多个关键词可以用逗号、顿号或空格分隔。</div>
+        </div>
+
+        <div class="actions">
+          <button id="submit-button" type="submit">保存 Q&A</button>
+          <a class="cancel" href="/qa">取消</a>
+        </div>
+
+        <div id="message" class="message"></div>
+      </form>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const form = document.getElementById("qa-form") as HTMLFormElement;
+      const questionInput = document.getElementById(
+        "question"
+      ) as HTMLInputElement;
+      const answerInput = document.getElementById(
+        "answer"
+      ) as HTMLTextAreaElement;
+      const keywordsInput = document.getElementById(
+        "keywords"
+      ) as HTMLInputElement;
+      const submitButton = document.getElementById(
+        "submit-button"
+      ) as HTMLButtonElement;
+      const message = document.getElementById("message") as HTMLElement;
+
+      async function checkLogin() {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          window.location.href = "/login";
+          return false;
+        }
+
+        return true;
+      }
+
+      checkLogin();
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
+        if (!session) {
+          window.location.href = "/login";
+          return;
+        }
+
+        const question = questionInput.value.trim();
+        const answer = answerInput.value.trim();
+        const keywords = keywordsInput.value.trim();
+
+        if (!question || !answer) {
+          message.textContent = "问题和回答不能为空。";
+          message.className = "message error";
+          return;
+        }
+
+        submitButton.disabled = true;
+        message.textContent = "正在保存……";
+        message.className = "message";
+
+        const { error } = await supabase.from("qa").insert({
+          question,
+          answer,
+          keywords: keywords || null,
+          user_id: session.user.id,
+        });
+
+        if (error) {
+          console.error("保存 Q&A 失败：", error);
+
+          message.textContent = "保存失败，请稍后重试。";
+          message.className = "message error";
+          submitButton.disabled = false;
+          return;
+        }
+
+        window.location.href = "/qa";
+      });
+    </script>
+  </body>
+</html>
