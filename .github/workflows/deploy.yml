@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Verify Supabase variables
+      - name: Verify Supabase connection
         env:
           PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
@@ -50,7 +50,16 @@ jobs:
             exit 1
           fi
 
-          echo "Supabase variables are present."
+          STATUS=$(curl -sS -o /dev/null -w "%{http_code}"             --connect-timeout 10             -H "apikey: $PUBLIC_SUPABASE_PUBLISHABLE_KEY"             "$PUBLIC_SUPABASE_URL/auth/v1/settings")
+
+          echo "Supabase HTTP status: $STATUS"
+
+          if [ "$STATUS" != "200" ]; then
+            echo "ERROR: GitHub Actions Supabase key/URL is not accepted."
+            exit 1
+          fi
+
+          echo "Supabase connection verified."
 
       - name: Build
         env:
