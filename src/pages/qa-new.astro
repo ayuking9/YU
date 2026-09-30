@@ -186,8 +186,8 @@
   <body>
     <main class="page">
       <div class="topbar">
-        <a class="brand" href="/">YU之宝库</a>
-        <a class="back" href="/qa">← 返回 Q&A</a>
+        <a class="brand" href={import.meta.env.BASE_URL}>YU之宝库</a>
+        <a class="back" href={`${import.meta.env.BASE_URL}qa`}>← 返回 Q&A</a>
       </div>
 
       <h1>新增 Q&A</h1>
@@ -228,7 +228,7 @@
 
         <div class="actions">
           <button id="submit-button" type="submit">保存 Q&A</button>
-          <a class="cancel" href="/qa">取消</a>
+          <a class="cancel" href={`${import.meta.env.BASE_URL}qa`}>取消</a>
         </div>
 
         <div id="message" class="message"></div>

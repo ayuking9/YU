@@ -210,11 +210,11 @@ import { supabase } from "../lib/supabase";
 
   <body>
     <header class="topbar">
-      <a class="logo" href="/">YU之宝库</a>
+      <a class="logo" href={import.meta.env.BASE_URL}>YU之宝库</a>
 
       <nav class="nav">
-        <a href="/archive">案例库</a>
-        <a href="/">首页</a>
+        <a href={`${import.meta.env.BASE_URL}archive`}>案例库</a>
+        <a href={import.meta.env.BASE_URL}>首页</a>
       </nav>
     </header>
 
@@ -226,7 +226,7 @@ import { supabase } from "../lib/supabase";
       <div id="error" class="error" style="display: none;"></div>
 
       <div id="case-content" style="display: none;">
-        <a class="back" href="/archive">← 返回案例库</a>
+        <a class="back" href={`${import.meta.env.BASE_URL}archive`}>← 返回案例库</a>
 
         <div class="type" id="case-type"></div>
 

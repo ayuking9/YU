@@ -230,11 +230,11 @@
 
   <body>
     <header class="topbar">
-      <a class="logo" href="/">YU之宝库</a>
+      <a class="logo" href={import.meta.env.BASE_URL}>YU之宝库</a>
 
       <nav class="nav">
-        <a href="/archive">案例库</a>
-        <a href="/">首页</a>
+        <a href={`${import.meta.env.BASE_URL}archive`}>案例库</a>
+        <a href={import.meta.env.BASE_URL}>首页</a>
       </nav>
     </header>
 
@@ -323,7 +323,7 @@
         </section>
 
         <div class="actions">
-          <a class="back" id="back-link" href="/archive">
+          <a class="back" id="back-link" href={`${import.meta.env.BASE_URL}archive`}>
             ← 返回案例
           </a>
 

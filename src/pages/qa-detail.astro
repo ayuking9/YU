@@ -12,19 +12,19 @@
   <body>
     <main>
       <header class="topbar">
-        <a href="/" class="logo">
+        <a href={import.meta.env.BASE_URL} class="logo">
           YU之宝库
         </a>
 
         <nav>
-          <a href="/archive">案例</a>
-          <a href="/qa">Q&A</a>
-          <a href="/login">登录</a>
+          <a href={`${import.meta.env.BASE_URL}archive`}>案例</a>
+          <a href={`${import.meta.env.BASE_URL}qa`}>Q&A</a>
+          <a href={`${import.meta.env.BASE_URL}login`}>登录</a>
         </nav>
       </header>
 
       <section class="page-head">
-        <a href="/qa" class="back">
+        <a href={`${import.meta.env.BASE_URL}qa`} class="back">
           ← 返回 Q&A
         </a>
 

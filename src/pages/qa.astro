@@ -5,12 +5,12 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Q&A">
   <div class="page">
     <header class="topbar">
-      <a href="/" class="brand">YU之宝库</a>
+      <a href={import.meta.env.BASE_URL} class="brand">YU之宝库</a>
 
       <nav>
-        <a href="/archive">案例</a>
-        <a href="/qa" class="active">Q&A</a>
-        <a href="/login">登录</a>
+        <a href={`${import.meta.env.BASE_URL}archive`}>案例</a>
+        <a href={`${import.meta.env.BASE_URL}qa`} class="active">Q&A</a>
+        <a href={`${import.meta.env.BASE_URL}login`}>登录</a>
       </nav>
     </header>
 
@@ -21,7 +21,7 @@ import Layout from "../layouts/Layout.astro";
           <h1>Q&A</h1>
         </div>
 
-        <a href="/qa-new" class="new-btn">＋ 新增问题</a>
+        <a href={`${import.meta.env.BASE_URL}qa-new`} class="new-btn">＋ 新增问题</a>
       </div>
 
       <div class="search-row">
@@ -87,7 +87,7 @@ import Layout from "../layouts/Layout.astro";
         .map((item, index) => {
           return `
             <a
-              href="/qa-detail?id=${item.id}"
+              href="${import.meta.env.BASE_URL}qa-detail?id=${item.id}"
               class="qa-item"
             >
               <div class="item-number">
