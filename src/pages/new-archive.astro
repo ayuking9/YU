@@ -15,7 +15,7 @@
         <a class="logo" href={import.meta.env.BASE_URL}>YU之宝库</a>
 
         <nav>
-          <a href={`${import.meta.env.BASE_URL}archive`}>案例库</a>
+          <a href={`${import.meta.env.BASE_URL}archive/`}>案例库</a>
           <a href={import.meta.env.BASE_URL}>首页</a>
         </nav>
       </header>
@@ -156,7 +156,7 @@
         </section>
 
         <div class="form-actions">
-          <a href={`${import.meta.env.BASE_URL}archive`} class="cancel">取消</a>
+          <a href={`${import.meta.env.BASE_URL}archive/`} class="cancel">取消</a>
           <button id="save-button" type="submit">保存案例</button>
         </div>
 
@@ -179,7 +179,7 @@
     } = await supabase.auth.getUser();
 
     if (!user) {
-      window.location.href = import.meta.env.BASE_URL + "login";
+      window.location.href = import.meta.env.BASE_URL + "login/";
       return null;
     }
 
@@ -241,7 +241,7 @@
     form.reset();
 
     setTimeout(() => {
-      window.location.href = import.meta.env.BASE_URL + "archive";
+      window.location.href = import.meta.env.BASE_URL + "archive/";
     }, 800);
   });
 
