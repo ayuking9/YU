@@ -179,7 +179,7 @@
     } = await supabase.auth.getUser();
 
     if (!user) {
-      window.location.href = "/login";
+      window.location.href = import.meta.env.BASE_URL + "login";
       return null;
     }
 
@@ -241,7 +241,7 @@
     form.reset();
 
     setTimeout(() => {
-      window.location.href = "/archive";
+      window.location.href = import.meta.env.BASE_URL + "archive";
     }, 800);
   });
 

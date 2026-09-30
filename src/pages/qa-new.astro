@@ -259,7 +259,7 @@
         } = await supabase.auth.getSession();
 
         if (!session) {
-          window.location.href = "/login";
+          window.location.href = import.meta.env.BASE_URL + "login";
           return false;
         }
 
@@ -276,7 +276,7 @@
         } = await supabase.auth.getSession();
 
         if (!session) {
-          window.location.href = "/login";
+          window.location.href = import.meta.env.BASE_URL + "login";
           return;
         }
 
@@ -310,7 +310,7 @@
           return;
         }
 
-        window.location.href = "/qa";
+        window.location.href = import.meta.env.BASE_URL + "qa";
       });
     </script>
   </body>

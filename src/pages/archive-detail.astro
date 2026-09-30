@@ -391,7 +391,7 @@ import { supabase } from "../lib/supabase";
                 return;
               }
 
-              window.location.href = "/archive";
+              window.location.href = import.meta.env.BASE_URL + "archive";
             });
           }
         }
