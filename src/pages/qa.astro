@@ -1,512 +1,931 @@
 ---
-import Layout from "../layouts/Layout.astro";
+const BASE = import.meta.env.BASE_URL;
 ---
 
-<Layout title="Q&A">
-  <div class="page">
-    <header class="topbar">
-      <a href={import.meta.env.BASE_URL} class="brand">YU之宝库</a>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Q&A｜YU之宝库</title>
+  </head>
 
-      <nav>
-        <a href={`${import.meta.env.BASE_URL}archive/`}>案例</a>
-        <a href={`${import.meta.env.BASE_URL}qa/`} class="active">Q&A</a>
-        <a href={`${import.meta.env.BASE_URL}login/`}>登录</a>
-      </nav>
-    </header>
+  <body>
+    <div class="stars stars-one"></div>
+    <div class="stars stars-two"></div>
+    <div class="stars stars-three"></div>
+
+    <div class="nebula nebula-one"></div>
+    <div class="nebula nebula-two"></div>
 
     <main>
-      <div class="page-head">
+      <header class="topbar">
+        <a class="logo" href={BASE}>YU之宝库</a>
+
+        <nav>
+          <a href={`${BASE}archive/`}>案例</a>
+          <a href={`${BASE}qa/`} class="active">Q&A</a>
+          <a href={`${BASE}login/`}>登录</a>
+        </nav>
+      </header>
+
+      <section class="page-head">
         <div>
-          <div class="small-title">日常法律问题</div>
+          <div class="eyebrow">
+            <span class="dot"></span>
+            DAILY LEGAL QUESTIONS
+          </div>
+
           <h1>Q&A</h1>
+
+          <p>日常法律问题 · 记录与检索</p>
         </div>
 
-        <a href={`${import.meta.env.BASE_URL}qa-new/`} class="new-btn">＋ 新增问题</a>
-      </div>
+        <a class="add-button" href={`${BASE}qa-new/`}>
+          <span>＋</span>
+          新增问题
+        </a>
+      </section>
 
-      <div class="search-row">
+      <section class="search-section">
         <div class="search-box">
-          <span>⌕</span>
+          <span class="search-symbol">⌕</span>
+
           <input
             id="search"
             type="text"
-            placeholder="关键词"
+            placeholder="搜索问题、关键词……"
             autocomplete="off"
           />
+
+          <span class="search-label">SEARCH</span>
         </div>
+      </section>
 
-        <div id="count" class="count">加载中</div>
+      <div class="section-heading">
+        <span>全部问题</span>
+        <span id="count">—</span>
       </div>
 
-      <div id="list" class="qa-list">
+      <section id="qa-grid" class="qa-grid">
         <div class="loading">正在加载……</div>
-      </div>
+      </section>
     </main>
-  </div>
 
-  <script>
-    import { supabase } from "../lib/supabase";
+    <script>
+      import { supabase } from "../lib/supabase";
 
-    type QaItem = {
-      id: number;
-      question: string;
-      answer: string;
-      keywords: string | null;
-      created_at: string | null;
-      updated_at: string | null;
-    };
+      const BASE = import.meta.env.BASE_URL;
 
-    const list = document.getElementById("list") as HTMLElement;
-    const search = document.getElementById("search") as HTMLInputElement;
-    const count = document.getElementById("count") as HTMLElement;
+      type QAItem = {
+        id: number;
+        question: string;
+        answer: string;
+        keywords: string | null;
+        created_at: string | null;
+        updated_at: string | null;
+      };
 
-    let allQa: QaItem[] = [];
+      const grid =
+        document.querySelector("#qa-grid") as HTMLDivElement | null;
 
-    function escapeHtml(value: string) {
-      return value
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+      const count =
+        document.querySelector("#count") as HTMLSpanElement | null;
 
-    function render(items: QaItem[]) {
-      count.textContent = `${items.length} 条`;
+      const search =
+        document.querySelector("#search") as HTMLInputElement | null;
 
-      if (items.length === 0) {
-        list.innerHTML = `
-          <div class="empty">
-            没有找到相关问题
-          </div>
-        `;
-        return;
+      let allItems: QAItem[] = [];
+
+      function escapeHtml(value: unknown): string {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
       }
 
-      list.innerHTML = items
-        .map((item, index) => {
-          return `
-            <a
-              href="${import.meta.env.BASE_URL}qa-detail/?id=${item.id}"
-              class="qa-item"
-            >
-              <div class="item-number">
-                ${String(index + 1).padStart(2, "0")}
-              </div>
+      function render(items: QAItem[]): void {
+        if (!grid || !count) {
+          return;
+        }
 
-              <div class="item-content">
-                <div class="item-question">
-                  ${escapeHtml(item.question)}
-                </div>
+        count.textContent =
+          String(items.length).padStart(2, "0");
 
-                <div class="item-keywords">
-                  ${
-                    item.keywords
-                      ? escapeHtml(item.keywords)
-                      : "暂无关键词"
-                  }
-                </div>
-              </div>
-
-              <div class="item-arrow">→</div>
-            </a>
+        if (items.length === 0) {
+          grid.innerHTML = `
+            <div class="empty">
+              暂时没有找到相关问题。
+            </div>
           `;
-        })
-        .join("");
-    }
+          return;
+        }
 
-    function filterList(keyword: string) {
-      const value = keyword.trim().toLowerCase();
+        grid.innerHTML = items
+          .map((item: QAItem, index: number) => {
+            const detailUrl =
+              `${BASE}qa-detail/?id=${encodeURIComponent(item.id)}`;
 
-      if (!value) {
-        render(allQa);
-        return;
+            const editUrl =
+              `${BASE}qa-edit/?id=${encodeURIComponent(item.id)}`;
+
+            const keywords =
+              item.keywords && item.keywords.trim()
+                ? item.keywords
+                : "暂无关键词";
+
+            return `
+              <article class="qa-card">
+
+                <a
+                  class="qa-main"
+                  href="${detailUrl}"
+                >
+                  <div class="card-number">
+                    ${String(index + 1).padStart(2, "0")}
+                  </div>
+
+                  <div class="card-content">
+                    <h2>
+                      ${escapeHtml(item.question)}
+                    </h2>
+
+                    <div class="keywords">
+                      ${escapeHtml(keywords)}
+                    </div>
+                  </div>
+
+                  <div class="card-arrow">
+                    ↗
+                  </div>
+                </a>
+
+                <a
+                  class="edit-button"
+                  href="${editUrl}"
+                >
+                  编辑
+                </a>
+
+              </article>
+            `;
+          })
+          .join("");
       }
 
-      const result = allQa.filter((item) => {
-        return (
-          item.question.toLowerCase().includes(value) ||
-          item.answer.toLowerCase().includes(value) ||
-          (item.keywords ?? "").toLowerCase().includes(value)
+      async function loadQA(): Promise<void> {
+        const {
+          data: { user }
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          window.location.href = `${BASE}login/`;
+          return;
+        }
+
+        const {
+          data,
+          error
+        } = await supabase
+          .from("qa")
+          .select(
+            "id, question, answer, keywords, created_at, updated_at"
+          )
+          .eq("user_id", user.id)
+          .order("created_at", {
+            ascending: false
+          });
+
+        if (error) {
+          console.error(error);
+
+          if (grid) {
+            grid.innerHTML = `
+              <div class="empty error">
+                Q&A 加载失败，请稍后再试。
+              </div>
+            `;
+          }
+
+          return;
+        }
+
+        allItems = (data ?? []) as QAItem[];
+
+        render(allItems);
+      }
+
+      if (search) {
+        search.addEventListener("input", () => {
+          const keyword =
+            search.value.trim().toLowerCase();
+
+          if (!keyword) {
+            render(allItems);
+            return;
+          }
+
+          const filtered: QAItem[] =
+            allItems.filter((item: QAItem) => {
+              return (
+                String(item.question ?? "")
+                  .toLowerCase()
+                  .includes(keyword) ||
+                String(item.answer ?? "")
+                  .toLowerCase()
+                  .includes(keyword) ||
+                String(item.keywords ?? "")
+                  .toLowerCase()
+                  .includes(keyword)
+              );
+            });
+
+          render(filtered);
+        });
+      }
+
+      void loadQA();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --text: #eeeeec;
+    --muted: #aaa4b5;
+    --dim: #777382;
+    --border: rgba(173, 160, 226, 0.24);
+    --purple: #aaa0df;
+    --purple-light: #d5cef3;
+  }
+
+  html {
+    min-height: 100%;
+  }
+
+  body {
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+
+    color: var(--text);
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Helvetica Neue",
+      Arial,
+      "PingFang SC",
+      "Hiragino Sans GB",
+      "Microsoft YaHei",
+      sans-serif;
+
+    background:
+      radial-gradient(
+        ellipse at 15% 10%,
+        rgba(88, 65, 150, 0.25),
+        transparent 30%
+      ),
+      radial-gradient(
+        ellipse at 86% 23%,
+        rgba(67, 48, 126, 0.22),
+        transparent 34%
+      ),
+      radial-gradient(
+        ellipse at 52% 83%,
+        rgba(53, 38, 108, 0.23),
+        transparent 40%
+      ),
+      linear-gradient(
+        135deg,
+        #08070e 0%,
+        #100c1d 35%,
+        #0d0918 68%,
+        #05050a 100%
+      );
+  }
+
+  .stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .stars-one {
+    opacity: 0.65;
+
+    background-image:
+      radial-gradient(
+        circle at 8% 15%,
+        rgba(235, 230, 255, 0.65) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 24% 38%,
+        rgba(220, 214, 255, 0.5) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 43% 12%,
+        rgba(235, 230, 255, 0.55) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 67% 25%,
+        rgba(225, 220, 255, 0.55) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 84% 10%,
+        rgba(235, 230, 255, 0.6) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 91% 65%,
+        rgba(220, 214, 255, 0.45) 0 1px,
+        transparent 1.5px
+      );
+  }
+
+  .stars-two {
+    opacity: 0.45;
+
+    background-image:
+      radial-gradient(
+        circle at 14% 72%,
+        rgba(220, 214, 255, 0.5) 0 0.8px,
+        transparent 1.2px
+      ),
+      radial-gradient(
+        circle at 32% 82%,
+        rgba(235, 230, 255, 0.45) 0 0.8px,
+        transparent 1.2px
+      ),
+      radial-gradient(
+        circle at 55% 66%,
+        rgba(225, 220, 255, 0.4) 0 0.8px,
+        transparent 1.2px
+      ),
+      radial-gradient(
+        circle at 78% 80%,
+        rgba(235, 230, 255, 0.4) 0 0.8px,
+        transparent 1.2px
+      );
+  }
+
+  .stars-three {
+    opacity: 0.3;
+
+    background-image:
+      radial-gradient(
+        circle at 6% 48%,
+        rgba(235, 230, 255, 0.45) 0 0.6px,
+        transparent 1px
+      ),
+      radial-gradient(
+        circle at 38% 54%,
+        rgba(220, 214, 255, 0.35) 0 0.6px,
+        transparent 1px
+      ),
+      radial-gradient(
+        circle at 72% 47%,
+        rgba(235, 230, 255, 0.4) 0 0.6px,
+        transparent 1px
+      );
+  }
+
+  .nebula {
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+    filter: blur(70px);
+  }
+
+  .nebula-one {
+    width: 300px;
+    height: 300px;
+    top: 20%;
+    right: -120px;
+    background: rgba(89, 65, 150, 0.12);
+  }
+
+  .nebula-two {
+    width: 260px;
+    height: 260px;
+    bottom: 5%;
+    left: -100px;
+    background: rgba(76, 54, 130, 0.1);
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+
+    width:
+      min(
+        1180px,
+        calc(100% - 64px)
+      );
+
+    margin: 0 auto;
+    padding-bottom: 100px;
+  }
+
+  .topbar {
+    height: 78px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom:
+      1px solid
+      rgba(173, 160, 226, 0.16);
+  }
+
+  .logo {
+    color: #eeeeec;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+
+  nav a {
+    color: #aaa4b5;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s ease;
+  }
+
+  nav a:hover,
+  nav a.active {
+    color: #eeeaf5;
+  }
+
+  .page-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    padding:
+      70px
+      0
+      44px;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 17px;
+
+    color: #8e879c;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #aaa0df;
+
+    box-shadow:
+      0 0 12px
+      rgba(170, 160, 223, 0.7);
+  }
+
+  h1 {
+    margin: 0;
+
+    color: #f1edf5;
+
+    font-size: 38px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+
+  .page-head p {
+    margin: 10px 0 0;
+
+    color: #777382;
+
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .add-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    min-height: 38px;
+
+    padding: 0 16px;
+
+    border:
+      1px solid
+      rgba(173, 160, 226, 0.3);
+
+    color: #d9d2e8;
+
+    background:
+      rgba(125, 103, 176, 0.08);
+
+    text-decoration: none;
+
+    font-size: 12px;
+
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .add-button:hover {
+    border-color:
+      rgba(173, 160, 226, 0.55);
+
+    background:
+      rgba(125, 103, 176, 0.15);
+  }
+
+  .add-button span {
+    color: #aaa0df;
+    font-size: 16px;
+  }
+
+  .search-section {
+    margin-bottom: 48px;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+
+    height: 54px;
+
+    border:
+      1px solid
+      rgba(173, 160, 226, 0.22);
+
+    background:
+      rgba(12, 9, 22, 0.62);
+
+    transition:
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .search-box:focus-within {
+    border-color:
+      rgba(173, 160, 226, 0.45);
+
+    background:
+      rgba(20, 15, 34, 0.75);
+  }
+
+  .search-symbol {
+    margin-left: 17px;
+
+    color: #aaa0df;
+
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .search-box input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+
+    padding: 0 15px;
+
+    border: 0;
+    outline: none;
+
+    color: #eeeaf5;
+    background: transparent;
+
+    font-family: inherit;
+    font-size: 14px;
+  }
+
+  .search-box input::placeholder {
+    color: #777382;
+  }
+
+  .search-label {
+    padding-right: 17px;
+
+    color: #5f5a69;
+
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding-bottom: 15px;
+
+    border-bottom:
+      1px solid
+      rgba(173, 160, 226, 0.16);
+
+    color: #aaa4b5;
+
+    font-size: 11px;
+    letter-spacing: 0.12em;
+  }
+
+  #count {
+    color: #6f6978;
+  }
+
+  .qa-grid {
+    display: grid;
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+    gap: 16px;
+
+    margin-top: 18px;
+  }
+
+  .qa-card {
+    position: relative;
+
+    min-height: 205px;
+
+    overflow: hidden;
+
+    border:
+      1px solid
+      rgba(173, 160, 226, 0.34);
+
+    background:
+      linear-gradient(
+        145deg,
+        rgba(36, 28, 57, 0.82),
+        rgba(14, 11, 24, 0.94)
+      );
+
+    box-shadow:
+      inset 0 1px 0
+      rgba(255, 255, 255, 0.025);
+
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .qa-card:hover {
+    transform: translateY(-2px);
+
+    border-color:
+      rgba(173, 160, 226, 0.55);
+
+    background:
+      linear-gradient(
+        145deg,
+        rgba(48, 38, 73, 0.9),
+        rgba(17, 13, 29, 0.96)
+      );
+
+    box-shadow:
+      0 12px 35px
+      rgba(0, 0, 0, 0.24);
+  }
+
+  .qa-main {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 205px;
+    height: 100%;
+
+    padding:
+      21px
+      21px
+      54px;
+
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card-number {
+    color: #777083;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+
+  .card-content {
+    margin-top: 27px;
+  }
+
+  .card-content h2 {
+    margin: 0;
+
+    color: #f0edf5;
+
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.65;
+    letter-spacing: 0.015em;
+
+    word-break: break-word;
+  }
+
+  .keywords {
+    margin-top: 17px;
+
+    color: #aaa0c2;
+
+    font-size: 11px;
+    line-height: 1.7;
+
+    word-break: break-word;
+  }
+
+  .card-arrow {
+    position: absolute;
+
+    right: 19px;
+    bottom: 17px;
+
+    color: #8d83b4;
+
+    font-size: 18px;
+
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .qa-card:hover .card-arrow {
+    color: #c7bff0;
+
+    transform:
+      translate(
+        2px,
+        -2px
+      );
+  }
+
+  .edit-button {
+    position: absolute;
+
+    left: 18px;
+    bottom: 16px;
+
+    z-index: 5;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 25px;
+
+    padding: 0 10px;
+
+    border:
+      1px solid
+      rgba(173, 160, 226, 0.28);
+
+    color: #aaa2b5;
+
+    background:
+      rgba(10, 8, 18, 0.8);
+
+    text-decoration: none;
+
+    font-size: 10px;
+    letter-spacing: 0.08em;
+
+    transition:
+      color 0.2s ease,
+      border-color 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .edit-button:hover {
+    color: #eeeaf5;
+
+    border-color:
+      rgba(173, 160, 226, 0.55);
+
+    background:
+      rgba(108, 86, 153, 0.28);
+  }
+
+  .loading,
+  .empty {
+    grid-column: 1 / -1;
+
+    min-height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+      1px dashed
+      rgba(173, 160, 226, 0.25);
+
+    color: #777382;
+
+    font-size: 12px;
+  }
+
+  .empty.error {
+    border-color:
+      rgba(210, 100, 125, 0.3);
+
+    color: #d8aab6;
+  }
+
+  @media (max-width: 900px) {
+    main {
+      width:
+        min(
+          calc(100% - 40px),
+          760px
         );
-      });
-
-      render(result);
     }
 
-    async function loadQa() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (!session) {
-        window.location.href = import.meta.env.BASE_URL + "login/";
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("qa")
-        .select(
-          "id, question, answer, keywords, created_at, updated_at"
-        )
-        .eq("user_id", session.user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        list.innerHTML = `
-          <div class="empty">
-            加载失败：${escapeHtml(error.message)}
-          </div>
-        `;
-        count.textContent = "";
-        return;
-      }
-
-      allQa = (data ?? []) as QaItem[];
-
-      render(allQa);
+    .qa-grid {
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(0, 1fr)
+        );
     }
+  }
 
-    search.addEventListener("input", () => {
-      filterList(search.value);
-    });
-
-    loadQa();
-  </script>
-
-  <style>
-    :global(body) {
-      margin: 0;
-      background: #09070f;
-      color: #f5f2f8;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
-    }
-
-    .page {
-      min-height: 100vh;
-      background:
-        radial-gradient(
-          circle at 50% 0%,
-          rgba(105, 70, 155, 0.13),
-          transparent 38%
-        ),
-        #09070f;
+  @media (max-width: 620px) {
+    main {
+      width: calc(100% - 28px);
     }
 
     .topbar {
-      height: 76px;
-      padding: 0 6vw;
-      box-sizing: border-box;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .brand {
-      font-size: 18px;
-      letter-spacing: 0.08em;
-      color: #ffffff;
-      text-decoration: none;
-    }
-
-    .brand:hover {
-      color: #ffffff;
+      height: 68px;
     }
 
     nav {
-      display: flex;
-      gap: 28px;
+      gap: 13px;
     }
 
     nav a {
-      color: rgba(255, 255, 255, 0.72);
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.2s ease;
-    }
-
-    nav a:hover,
-    nav a.active {
-      color: #ffffff;
-    }
-
-    main {
-      width: min(960px, 88vw);
-      margin: 0 auto;
-      padding: 68px 0 100px;
+      font-size: 11px;
     }
 
     .page-head {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 42px;
+      display: block;
+      padding: 48px 0 32px;
     }
 
-    .small-title {
-      margin-bottom: 13px;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 12px;
-      letter-spacing: 0.16em;
+    .add-button {
+      margin-top: 28px;
+    }
+
+    .qa-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .qa-card,
+    .qa-main {
+      min-height: 190px;
     }
 
     h1 {
-      margin: 0;
-      font-size: 40px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-      color: #ffffff;
+      font-size: 32px;
     }
-
-    .new-btn {
-      height: 40px;
-      padding: 0 18px;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      border: 1px solid rgba(210, 180, 240, 0.55);
-      background: rgba(125, 91, 177, 0.1);
-
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 13px;
-
-      box-sizing: border-box;
-      transition: 0.2s ease;
-    }
-
-    .new-btn:hover {
-      border-color: rgba(225, 205, 245, 0.9);
-      background: rgba(125, 91, 177, 0.22);
-    }
-
-    .search-row {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 22px;
-    }
-
-    .search-box {
-      height: 46px;
-      flex: 1;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      padding: 0 15px;
-      box-sizing: border-box;
-
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.035);
-
-      transition: 0.2s ease;
-    }
-
-    .search-box:focus-within {
-      border-color: rgba(220, 190, 250, 0.8);
-      background: rgba(126, 91, 179, 0.1);
-      box-shadow: 0 0 0 3px rgba(126, 91, 179, 0.09);
-    }
-
-    .search-box span {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 20px;
-    }
-
-    .search-box input {
-      flex: 1;
-      width: 100%;
-
-      border: 0;
-      outline: none;
-      background: transparent;
-
-      color: #ffffff;
-      font-size: 14px;
-    }
-
-    .search-box input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
-
-    .count {
-      width: 50px;
-      text-align: right;
-      color: rgba(255, 255, 255, 0.62);
-      font-size: 12px;
-    }
-
-    .qa-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .qa-item {
-      display: flex;
-      align-items: center;
-
-      width: 100%;
-      min-height: 78px;
-
-      padding: 17px 19px;
-      box-sizing: border-box;
-
-      border: 1px solid rgba(205, 180, 230, 0.38);
-      background: rgba(20, 15, 29, 0.72);
-
-      text-decoration: none;
-      color: inherit;
-
-      transition:
-        border-color 0.18s ease,
-        background 0.18s ease,
-        box-shadow 0.18s ease,
-        transform 0.18s ease;
-    }
-
-    .qa-item:hover {
-      border-color: rgba(225, 200, 250, 0.9);
-
-      background: rgba(105, 72, 145, 0.2);
-
-      box-shadow:
-        0 0 0 1px rgba(225, 200, 250, 0.14),
-        0 8px 28px rgba(35, 17, 58, 0.35);
-
-      transform: translateY(-1px);
-    }
-
-    .qa-item:active {
-      border-color: #ffffff;
-
-      background: rgba(119, 80, 164, 0.3);
-
-      box-shadow:
-        0 0 0 3px rgba(190, 150, 235, 0.14);
-
-      transform: translateY(0);
-    }
-
-    .item-number {
-      width: 38px;
-      flex: 0 0 38px;
-
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-    }
-
-    .item-content {
-      min-width: 0;
-      flex: 1;
-    }
-
-    .item-question {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-
-      color: #ffffff;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    .item-keywords {
-      margin-top: 6px;
-
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-
-      color: rgba(255, 255, 255, 0.72);
-      font-size: 11px;
-      line-height: 1.4;
-    }
-
-    .item-arrow {
-      margin-left: 18px;
-
-      color: rgba(255, 255, 255, 0.55);
-      font-size: 17px;
-
-      transition: 0.18s ease;
-    }
-
-    .qa-item:hover .item-arrow {
-      color: #ffffff;
-      transform: translateX(4px);
-    }
-
-    .loading,
-    .empty {
-      border: 1px solid rgba(205, 180, 230, 0.3);
-
-      padding: 50px 20px;
-
-      text-align: center;
-
-      color: rgba(255, 255, 255, 0.7);
-
-      background: rgba(20, 15, 29, 0.55);
-
-      font-size: 13px;
-    }
-
-    @media (max-width: 700px) {
-      .topbar {
-        padding: 0 5vw;
-      }
-
-      nav {
-        gap: 18px;
-      }
-
-      main {
-        width: 90vw;
-        padding-top: 48px;
-      }
-
-      .page-head {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 24px;
-      }
-
-      h1 {
-        font-size: 34px;
-      }
-
-      .new-btn {
-        width: 100%;
-      }
-
-      .count {
-        display: none;
-      }
-
-      .qa-item {
-        min-height: 72px;
-        padding: 14px;
-      }
-
-      .item-number {
-        width: 27px;
-        flex-basis: 27px;
-      }
-    }
-  </style>
-</Layout>
+  }
+</style>

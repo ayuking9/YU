@@ -1,0 +1,819 @@
+---
+const BASE = import.meta.env.BASE_URL;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width"
+    />
+
+    <title>
+      编辑 Q&A｜YU之宝库
+    </title>
+  </head>
+
+  <body>
+    <div class="stars stars-one"></div>
+    <div class="stars stars-two"></div>
+
+    <main>
+      <header class="topbar">
+        <a
+          class="logo"
+          href={BASE}
+        >
+          YU之宝库
+        </a>
+
+        <nav>
+          <a
+            href={`${BASE}archive/`}
+          >
+            案例
+          </a>
+
+          <a
+            href={`${BASE}qa/`}
+          >
+            Q&A
+          </a>
+        </nav>
+      </header>
+
+      <section class="page">
+        <a
+          class="back"
+          href={`${BASE}qa/`}
+        >
+          ← 返回 Q&A
+        </a>
+
+        <div class="eyebrow">
+          EDIT Q&A
+        </div>
+
+        <h1>
+          编辑问题
+        </h1>
+
+        <form
+          id="edit-form"
+        >
+          <label>
+            <span>
+              问题
+            </span>
+
+            <textarea
+              id="question"
+              required
+              rows="4"
+            ></textarea>
+          </label>
+
+          <label>
+            <span>
+              答案
+            </span>
+
+            <textarea
+              id="answer"
+              required
+              rows="12"
+            ></textarea>
+          </label>
+
+          <label>
+            <span>
+              关键词
+            </span>
+
+            <input
+              id="keywords"
+              type="text"
+            />
+          </label>
+
+          <div
+            id="message"
+            class="message"
+          ></div>
+
+          <div class="actions">
+            <a
+              class="cancel"
+              href={`${BASE}qa/`}
+            >
+              取消
+            </a>
+
+            <button
+              type="submit"
+              id="save-button"
+            >
+              保存修改
+            </button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      import { supabase } from "../lib/supabase";
+
+      const BASE =
+        import.meta.env.BASE_URL;
+
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const id =
+        params.get("id");
+
+      const question =
+        document.querySelector(
+          "#question"
+        ) as HTMLTextAreaElement | null;
+
+      const answer =
+        document.querySelector(
+          "#answer"
+        ) as HTMLTextAreaElement | null;
+
+      const keywords =
+        document.querySelector(
+          "#keywords"
+        ) as HTMLInputElement | null;
+
+      const form =
+        document.querySelector(
+          "#edit-form"
+        ) as HTMLFormElement | null;
+
+      const message =
+        document.querySelector(
+          "#message"
+        ) as HTMLDivElement | null;
+
+      const saveButton =
+        document.querySelector(
+          "#save-button"
+        ) as HTMLButtonElement | null;
+
+      function showMessage(
+        text: string,
+        type: string = ""
+      ): void {
+        if (!message) {
+          return;
+        }
+
+        message.textContent =
+          text;
+
+        message.className =
+          `message ${type}`;
+      }
+
+      async function loadQuestion(): Promise<void> {
+        if (!id) {
+          showMessage(
+            "没有找到这个 Q&A。",
+            "error"
+          );
+
+          return;
+        }
+
+        const {
+          data: {
+            user
+          }
+        } =
+          await supabase.auth.getUser();
+
+        if (!user) {
+          window.location.href =
+            `${BASE}login/`;
+
+          return;
+        }
+
+        const {
+          data,
+          error
+        } =
+          await supabase
+            .from("qa")
+            .select(
+              "id, question, answer, keywords"
+            )
+            .eq(
+              "id",
+              id
+            )
+            .eq(
+              "user_id",
+              user.id
+            )
+            .single();
+
+        if (
+          error ||
+          !data
+        ) {
+          console.error(
+            error
+          );
+
+          showMessage(
+            "没有找到这个 Q&A。",
+            "error"
+          );
+
+          return;
+        }
+
+        if (question) {
+          question.value =
+            data.question ?? "";
+        }
+
+        if (answer) {
+          answer.value =
+            data.answer ?? "";
+        }
+
+        if (keywords) {
+          keywords.value =
+            data.keywords ?? "";
+        }
+      }
+
+      if (form) {
+        form.addEventListener(
+          "submit",
+          async (
+            event: SubmitEvent
+          ) => {
+            event.preventDefault();
+
+            if (!id) {
+              return;
+            }
+
+            const {
+              data: {
+                user
+              }
+            } =
+              await supabase.auth.getUser();
+
+            if (!user) {
+              window.location.href =
+                `${BASE}login/`;
+
+              return;
+            }
+
+            if (saveButton) {
+              saveButton.disabled =
+                true;
+
+              saveButton.textContent =
+                "保存中……";
+            }
+
+            const questionValue =
+              question
+                ?.value
+                .trim() ?? "";
+
+            const answerValue =
+              answer
+                ?.value
+                .trim() ?? "";
+
+            const keywordsValue =
+              keywords
+                ?.value
+                .trim() ?? "";
+
+            const {
+              error
+            } =
+              await supabase
+                .from("qa")
+                .update({
+                  question:
+                    questionValue,
+
+                  answer:
+                    answerValue,
+
+                  keywords:
+                    keywordsValue ||
+                    null,
+
+                  updated_at:
+                    new Date().toISOString()
+                })
+                .eq(
+                  "id",
+                  id
+                )
+                .eq(
+                  "user_id",
+                  user.id
+                );
+
+            if (error) {
+              console.error(
+                error
+              );
+
+              showMessage(
+                "保存失败，请稍后再试。",
+                "error"
+              );
+
+              if (saveButton) {
+                saveButton.disabled =
+                  false;
+
+                saveButton.textContent =
+                  "保存修改";
+              }
+
+              return;
+            }
+
+            window.location.href =
+              `${BASE}qa-detail/?id=${encodeURIComponent(id)}`;
+          }
+        );
+      }
+
+      void loadQuestion();
+    </script>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    position: relative;
+
+    min-height: 100vh;
+
+    margin: 0;
+
+    color: #eeeeec;
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "Helvetica Neue",
+      Arial,
+      "PingFang SC",
+      "Hiragino Sans GB",
+      "Microsoft YaHei",
+      sans-serif;
+
+    background:
+      radial-gradient(
+        ellipse at 15% 10%,
+        rgba(
+          88,
+          65,
+          150,
+          0.25
+        ),
+        transparent 30%
+      ),
+      radial-gradient(
+        ellipse at 86% 23%,
+        rgba(
+          67,
+          48,
+          126,
+          0.22
+        ),
+        transparent 34%
+      ),
+      linear-gradient(
+        135deg,
+        #08070e 0%,
+        #100c1d 35%,
+        #0d0918 68%,
+        #05050a 100%
+      );
+  }
+
+  .stars {
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+  }
+
+  .stars-one {
+    opacity: 0.55;
+
+    background-image:
+      radial-gradient(
+        circle at 10% 15%,
+        rgba(
+          235,
+          230,
+          255,
+          0.6
+        ) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 30% 40%,
+        rgba(
+          220,
+          214,
+          255,
+          0.45
+        ) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 65% 20%,
+        rgba(
+          235,
+          230,
+          255,
+          0.5
+        ) 0 1px,
+        transparent 1.5px
+      ),
+      radial-gradient(
+        circle at 88% 70%,
+        rgba(
+          220,
+          214,
+          255,
+          0.4
+        ) 0 1px,
+        transparent 1.5px
+      );
+  }
+
+  .stars-two {
+    opacity: 0.3;
+
+    background-image:
+      radial-gradient(
+        circle at 20% 80%,
+        rgba(
+          235,
+          230,
+          255,
+          0.4
+        ) 0 0.7px,
+        transparent 1px
+      ),
+      radial-gradient(
+        circle at 75% 50%,
+        rgba(
+          220,
+          214,
+          255,
+          0.4
+        ) 0 0.7px,
+        transparent 1px
+      );
+  }
+
+  main {
+    position: relative;
+
+    z-index: 1;
+
+    width:
+      min(
+        900px,
+        calc(100% - 48px)
+      );
+
+    margin: 0 auto;
+  }
+
+  .topbar {
+    height: 78px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    border-bottom:
+      1px solid
+      rgba(
+        173,
+        160,
+        226,
+        0.16
+      );
+  }
+
+  .logo {
+    color: #eeeeec;
+
+    text-decoration: none;
+
+    font-size: 18px;
+
+    font-weight: 400;
+
+    letter-spacing: 0.08em;
+  }
+
+  nav {
+    display: flex;
+
+    gap: 26px;
+  }
+
+  nav a {
+    color: #aaa4b5;
+
+    text-decoration: none;
+
+    font-size: 13px;
+  }
+
+  nav a:hover {
+    color: #eeeaf5;
+  }
+
+  .page {
+    padding:
+      62px
+      0
+      100px;
+  }
+
+  .back {
+    display: inline-block;
+
+    margin-bottom: 45px;
+
+    color: #8e879c;
+
+    text-decoration: none;
+
+    font-size: 12px;
+  }
+
+  .back:hover {
+    color: #d5cef3;
+  }
+
+  .eyebrow {
+    margin-bottom: 13px;
+
+    color: #8e879c;
+
+    font-size: 10px;
+
+    letter-spacing: 0.18em;
+  }
+
+  h1 {
+    margin:
+      0
+      0
+      42px;
+
+    color: #f1edf5;
+
+    font-size: 32px;
+
+    font-weight: 400;
+  }
+
+  form {
+    border-top:
+      1px solid
+      rgba(
+        173,
+        160,
+        226,
+        0.2
+      );
+  }
+
+  label {
+    display: block;
+
+    padding:
+      28px
+      0;
+
+    border-bottom:
+      1px solid
+      rgba(
+        173,
+        160,
+        226,
+        0.15
+      );
+  }
+
+  label span {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: #aaa4b5;
+
+    font-size: 11px;
+
+    letter-spacing: 0.1em;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+
+    border:
+      1px solid
+      rgba(
+        173,
+        160,
+        226,
+        0.2
+      );
+
+    outline: none;
+
+    padding: 14px;
+
+    color: #eeeaf5;
+
+    background:
+      rgba(
+        18,
+        13,
+        29,
+        0.72
+      );
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    resize: vertical;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color:
+      rgba(
+        173,
+        160,
+        226,
+        0.5
+      );
+
+    background:
+      rgba(
+        23,
+        17,
+        38,
+        0.82
+      );
+  }
+
+  .message {
+    min-height: 24px;
+
+    margin-top: 18px;
+
+    color: #aaa4b5;
+
+    font-size: 12px;
+  }
+
+  .message.error {
+    color: #d8aab6;
+  }
+
+  .actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 22px;
+  }
+
+  .cancel,
+  button {
+    min-height: 38px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 0 17px;
+
+    border:
+      1px solid
+      rgba(
+        173,
+        160,
+        226,
+        0.25
+      );
+
+    color: #d5cee2;
+
+    background:
+      rgba(
+        125,
+        103,
+        176,
+        0.08
+      );
+
+    text-decoration: none;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    cursor: pointer;
+  }
+
+  button {
+    background:
+      rgba(
+        125,
+        103,
+        176,
+        0.18
+      );
+  }
+
+  .cancel:hover,
+  button:hover {
+    border-color:
+      rgba(
+        173,
+        160,
+        226,
+        0.48
+      );
+
+    background:
+      rgba(
+        125,
+        103,
+        176,
+        0.22
+      );
+  }
+
+  button:disabled {
+    opacity: 0.55;
+
+    cursor: wait;
+  }
+
+  @media (max-width: 620px) {
+    main {
+      width:
+        calc(100% - 28px);
+    }
+
+    .page {
+      padding-top: 45px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+  }
+</style>
