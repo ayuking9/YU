@@ -83,7 +83,7 @@ const BASE = import.meta.env.BASE_URL;
       </section>
 
       <div class="section-heading">
-        <span>全部案例</span>
+        <span id="category-title">全部案例</span>
         <span id="count">—</span>
       </div>
 
@@ -136,6 +136,17 @@ const BASE = import.meta.env.BASE_URL;
           "#search"
         ) as HTMLInputElement | null;
 
+      // CATEGORY_QUERY_FILTER：读取首页传来的分类
+      const requestedType = new URLSearchParams(window.location.search).get("type")?.trim() ?? "";
+      const allowedTypes = ["民商事", "劳动", "知识产权", "资本市场", "其他"];
+      const selectedType = allowedTypes.includes(requestedType) ? requestedType : "";
+      const categoryTitle = document.querySelector("#category-title") as HTMLSpanElement | null;
+
+      if (categoryTitle) {
+        categoryTitle.textContent = selectedType ? `${selectedType}案例` : "全部案例";
+      }
+
+
       let allItems: ArchiveItem[] = [];
 
       function escapeHtml(
@@ -167,6 +178,12 @@ const BASE = import.meta.env.BASE_URL;
       function render(
         items: ArchiveItem[]
       ): void {
+
+        // CATEGORY_QUERY_FILTER：只显示所选类别
+        items = items.filter((item: ArchiveItem) =>
+          !selectedType || String(item.type ?? "").trim() === selectedType
+        );
+
         if (!grid || !count) {
           return;
         }
